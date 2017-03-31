@@ -2,7 +2,9 @@
   "name": "task-calendar",
   "version": "1.0.0",
   "description": "Task list using the Google Calendar API to help track due dates",
-  "author": "James Hibben <jmhibben@gmail.com>",
+  "contributors": [
+    "James Hibben <jmhibben@gmail.com>"
+  ],
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
