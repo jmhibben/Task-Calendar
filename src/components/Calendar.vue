@@ -93,6 +93,7 @@ export default {}
 </script>
 
 <style scoped lang="scss">
+// Need to make this mobile-ready 
 $overdue: rgb(240, 165, 165);
 $nodate: rgb(250, 200, 130);
 $completed: rgb(140, 230, 170);
