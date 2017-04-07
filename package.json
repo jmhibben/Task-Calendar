@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "Task list using the Google Calendar API to help track due dates",
   "contributors": [
-    "James Hibben <jmhibben@gmail.com>"
+    "James Hibben <jmhibben@gmail.com>",
+    "Jenna Davis <jenna.kay.davis@gmail.com>",
+    "America Nishimoto <America111@live.missouristate.edu>",
+    "Jonathon Hughes <jonathon2593@live.missouristate,edu>",
+    "Brad Light <bdlight747@gmail.com>"
   ],
   "private": true,
   "scripts": {
