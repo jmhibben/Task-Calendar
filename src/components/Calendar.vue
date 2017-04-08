@@ -14,59 +14,72 @@
         <th>Sunday</th>
       </tr>
       <tr>
-        <td><span>27</span></td>
-        <td><span>28</span></td>
-        <td> <span>29</span></td>
-        <td> <span>30</span></td>
-        <td> <span>31</span></td>
-        <td class="current"> <span>1</span></td>
-        <td class="current"> <span>2</span></td>
+        <td><router-link to="/week">26</router-link></td>
+        <td><router-link to="/week">27</router-link></td>
+        <td><router-link to="/week">28</router-link></td>
+        <td><router-link to="/week">29</router-link></td>
+        <td><router-link to="/week">30</router-link></td>
+        <td><router-link to="/week">31</router-link></td>
+        <td class="current"><router-link to="/week">1</router-link></td>
       </tr>
       <tr>
-        <td class="current"> <span>3</span></td>
-        <td class="current"> <span>4</span>
+      <!-- FIXME: `router-link` only affects text content right now -->
+        <td class="current"><router-link to="/week">2</router-link></td>
+        <td class="current"><router-link to="/week">3</router-link></td>
+        <td class="current"><router-link to="/week">4</router-link>
           <button class="task-count late">1 task</button>
         </td>
-        <td class="current"> <span>5</span></td>
-        <td class="current"> <span>6</span></td>
-        <td class="current"> <span>7</span>
+        <td class="current"><router-link to="/week">5</router-link></td>
+        <td class="current"><router-link to="/week">6</router-link></td>
+        <td class="current"><router-link to="/week">7
           <button class="task-count">1 task</button>
+          </router-link>
         </td>
-        <td class="current"> <span>8</span></td>
-        <td class="current"> <span>9</span></td>
+        <td class="current"><router-link to="/week">8</router-link></td>
       </tr>
       <tr>
-        <td class="current"> <span>10</span></td>
-        <td class="current"> <span>11</span></td>
-        <td class="current"> <span>12</span></td>
-        <td class="current"> <span>13</span>
+        <td class="current"><router-link to="/week">9</router-link></td>
+        <td class="current"><router-link to="/week">10</router-link></td>
+        <td class="current"><router-link to="/week">11</router-link></td>
+        <td class="current"><router-link to="/week">12</router-link></td>
+        <td class="current"><router-link to="/week">13
           <button class="task-count">2 tasks</button>
+          </router-link>
         </td>
-        <td class="current"> <span>14</span>
+        <td class="current"><router-link to="/week">14</router-link>
           <button class="task-count">1 task</button>
         </td>
-        <td class="current"> <span>15</span></td>
-        <td class="current"> <span>16</span></td>
+        <td class="current"><router-link to="/week">15</router-link></td>
       </tr>
       <tr>
-        <td class="current"> <span>17</span></td>
-        <td class="current"> <span>18</span>
+        <td class="current"><router-link to="/week">16</router-link></td>
+        <td class="current"><router-link to="/week">17</router-link></td>
+        <td class="current"><router-link to="/week">18
           <button class="task-count">3 tasks</button>
+          </router-link>
         </td>
-        <td class="current"> <span>19</span></td>
-        <td class="current"> <span>20</span></td>
-        <td class="current"> <span>21</span></td>
-        <td class="current"> <span>22</span></td>
-        <td class="current"> <span>23</span></td>
+        <td class="current"><router-link to="/week">19</router-link></td>
+        <td class="current"><router-link to="/week">20</router-link></td>
+        <td class="current"><router-link to="/week">21</router-link></td>
+        <td class="current"><router-link to="/week">22</router-link></td>
       </tr>
       <tr>
-        <td class="current"> <span>24</span></td>
-        <td class="current"> <span>25</span></td>
-        <td class="current"> <span>26</span></td>
-        <td class="current"> <span>27</span></td>
-        <td class="current"> <span>28</span></td>
-        <td class="current"> <span>29</span></td>
-        <td class="current"> <span>30</span></td>
+        <td class="current"><router-link to="/week">23</router-link></td>
+        <td class="current"><router-link to="/week">24</router-link></td>
+        <td class="current"><router-link to="/week">25</router-link></td>
+        <td class="current"><router-link to="/week">26</router-link></td>
+        <td class="current"><router-link to="/week">27</router-link></td>
+        <td class="current"><router-link to="/week">28</router-link></td>
+        <td class="current"><router-link to="/week">29</router-link></td>
+      </tr>
+      <tr>
+        <td class="current"><router-link to="/week">30</router-link></td>
+        <td><router-link to="/week">1</router-link></td>
+        <td><router-link to="/week">2</router-link></td>
+        <td><router-link to="/week">3</router-link></td>
+        <td><router-link to="/week">4</router-link></td>
+        <td><router-link to="/week">5</router-link></td>
+        <td><router-link to="/week">6</router-link></td>
       </tr>
     </table>
   </article>
@@ -89,7 +102,14 @@
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'calendar',
+  methods: {
+    goToWeek (path = '') {
+      this.$router.push('week')
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">
