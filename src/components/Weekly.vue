@@ -8,15 +8,15 @@
 <article>
   <table>
       <thead>
-        <tr>
-          <th class="primaryRow">Hour</th>
-          <th class="primaryRow">Sunday</th>
-          <th class="primaryRow">Monday</th>
-          <th class="primaryRow">Tuesday</th>
-          <th class="primaryRow">Wednesday</th>
-          <th class="primaryRow">Thursday</th>
-          <th class="primaryRow">Friday</th>
-          <th class="primaryRow">Saturday</th>
+        <tr class="primaryRow">
+          <th>Hour</th>
+          <th>Sunday</th>
+          <th>Monday</th>
+          <th>Tuesday</th>
+          <th>Wednesday</th>
+          <th>Thursday</th>
+          <th>Friday</th>
+          <th>Saturday</th>
         </tr>
       </thead>
       <tbody>
@@ -30,14 +30,14 @@
           <td></td>
           <td></td>
         </tr>
-        <tr>
-          <td class="alternateRow">9:00 AM</td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow monday"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
+        <tr class="alternateRow">
+          <td>9:00 AM</td>
+          <td></td>
+          <td class="monday"></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
           <timeSlot></timeSlot>
         </tr>
         <tr>
@@ -50,15 +50,15 @@
           <td></td>
           <td class="overlap saturday"></td>
         </tr>
-        <tr>
-          <td class="alternateRow">11:00 AM</td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow overlap saturday"></td>
+        <tr class="alternateRow">
+          <td>11:00 AM</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="overlap saturday"></td>
         </tr>
         <tr>
           <td>12:00 PM</td>
@@ -70,15 +70,15 @@
           <td></td>
           <td class="overlap saturday"></td>
         </tr>
-        <tr>
-          <td class="alternateRow">1:00 PM</td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow overlap saturday"></td>
+        <tr class="alternateRow">
+          <td>1:00 PM</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="overlap saturday"></td>
         </tr>
         <tr>
           <td>2:00 PM</td>
@@ -90,15 +90,15 @@
           <td></td>
           <td class="overlap saturday"></td>
         </tr>
-        <tr>
-          <td class="alternateRow">3:00 PM</td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow overlap saturday"></td>
+        <tr class="alternateRow">
+          <td>3:00 PM</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="overlap saturday"></td>
         </tr>
         <tr>
           <td>4:00 PM</td>
@@ -110,15 +110,15 @@
           <td></td>
           <td class="overlap saturday"></td>
         </tr>
-        <tr>
-          <td class="alternateRow">5:00 PM</td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow overlap saturday"></td>
+        <tr class="alternateRow">
+          <td>5:00 PM</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td class="overlap saturday"></td>
         </tr>
         <tr>
           <td>6:00 PM</td>
@@ -130,15 +130,15 @@
           <td></td>
           <td class="saturday"></td>
         </tr>
-        <tr>
-          <td class="alternateRow">7:00 PM</td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow overlap tuesday">Bowling practice</td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
+        <tr class="alternateRow">
+          <td>7:00 PM</td>
+          <td></td>
+          <td></td>
+          <td class="overlap tuesday">Bowling practice</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
         </tr>
         <tr>
           <td>8:00 PM</td>
@@ -150,15 +150,15 @@
           <td></td>
           <td></td>
         </tr>
-        <tr>
-          <td class="alternateRow">9:00 PM</td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow tuesday"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
+        <tr class='alternateRow'>
+          <td>9:00 PM</td>
+          <td></td>
+          <td></td>
+          <td class="tuesday"></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
         </tr>
         <tr>
           <td>10:00 PM</td>
@@ -170,15 +170,15 @@
           <td></td>
           <td></td>
         </tr>
-        <tr>
-          <td class="alternateRow">11:00 PM</td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
-          <td class="alternateRow"></td>
+        <tr class="alternateRow">
+          <td>11:00 PM</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
         </tr>
         <tr>
           <td>12:00 AM</td>
@@ -268,21 +268,22 @@
     border: 1px solid #888;
     border-radius: 4px;
 
-    th, td {
+    tr {
+      &.alternateRow {
+        background-color: #aaa;
+      }
+
+      &.primaryRow {
+        background-color: #888;
+      }
+    }
+      th, td {
       border-bottom: 1px solid black;
       border-right: 1px solid black;
       padding: 10px;
       text-align: left;
       vertical-align: top;
       width: 100px;
-
-      &.primaryRow {
-        background-color: #888;
-      }
-
-      &.alternateRow {
-        background-color: #aaa;
-      }
 
       &.overlap {
         border-bottom: none;
@@ -314,7 +315,6 @@
       }
 
     }
-
     td {
       height: 40px;
     }
