@@ -201,7 +201,11 @@
 
   export default {
     name: 'weekly',
-
+    data: function () {
+      return {
+        task: 'Football game'
+      }
+    },
     components: {
       timeSlot: TimeSlot
     }
@@ -277,7 +281,7 @@
         background-color: #888;
       }
     }
-      th, td {
+    th, td {
       border-bottom: 1px solid black;
       border-right: 1px solid black;
       padding: 10px;

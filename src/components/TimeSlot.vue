@@ -1,3 +1,3 @@
 <template>
-  <td class='alternateRow saturday overlap'>Karate Tournament!!</td>
+  <td class='saturday overlap'>{{ task }}</td>
 </template>
