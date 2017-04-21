@@ -15,7 +15,7 @@ const store = new Vuex.Store({
       code: null,
       token: null
     },
-    auth: oauthClient
+    authClient: oauthClient
   },
   getters: {
     getAuthCode: state => {
