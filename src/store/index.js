@@ -1,21 +1,21 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import moment from 'moment'
+// import moment from 'moment'
 // google api files
-import { oauthClient } from '../assets/api/oauth'
-
+// import { oauthClient } from '../assets/api/oauth'
 
 // This lets us pass the store object through the entire app as `this.$state`
 Vue.use(Vuex)
 
-const store = new Vuex.Store({
+export default new Vuex.Store({
   state: {
     // initially set to null- there's no way we can know what these will be ahead of time
     auth: {
+      url: null,
       code: null,
       token: null
-    },
-    authClient: oauthClient
+    }
+    // authClient: oauthClient
   },
   getters: {
     getAuthCode: state => {
@@ -39,6 +39,9 @@ const store = new Vuex.Store({
     setAuthToken: (state, auth) => {
       state.auth.token = auth.token
     },
+    setAuthUrl: (state, auth) => {
+      state.auth.url = auth.url
+    }
   },
   // Using argument destructuring in actions to simplify use
   // -> `commit` instead of `context.commit`
@@ -57,6 +60,33 @@ const store = new Vuex.Store({
         type: 'setAuthToken',
         token: _token
       })
+    },
+    showLogin ({ commit }) {
+      let xhr = new XMLHttpRequest()
+      xhr.withCredentials = true
+      // Oddly, this has stopped returning anything
+      xhr.addEventListener('readystatechange', function () {
+        if (this.readyState === 4) {
+          console.log(this)
+          console.log(typeof this.responseText)
+          let auth = JSON.parse(this.responseText)
+          // console.log(auth.url)
+          return new Promise((resolve, reject) => {
+            commit({
+              type: 'setAuthUrl',
+              url: auth.url
+            })
+          })
+        }
+      })
+      // open and send the XHR
+      xhr.open('get', 'http://127.0.0.1:8079/api/auth/url')
+      xhr.setRequestHeader('cache-control', 'no-cache')
+      xhr.send()
     }
   }
 })
+
+// function urlHandler () {
+//   console.log(this.response)
+// }
