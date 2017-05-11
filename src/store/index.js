@@ -41,44 +41,51 @@ export default new Vuex.Store({
     // See these for more information on dispatching actions:
     //  https://vuex.vuejs.org/en/actions.html#dispatching-actions
     //  https://vuex.vuejs.org/en/actions.html#dispatching-actions-in-components
-    setAuthCode ({ commit }, _code) {
-      commit({
-        type: 'setAuthCode',
-        code: _code
-      })
-    },
-    setAuthToken ({ commit }, _token) {
-      commit({
-        type: 'setAuthToken',
-        token: _token
-      })
-    },
-    showLogin ({ commit }) {
+    apiShowLogin ({ commit }) {
+      // let xhr = sendRequest('GET', '/api')
+      // console.log(xhr)
       let xhr = new XMLHttpRequest()
-      xhr.withCredentials = true
-      // Oddly, this has stopped returning anything
+
       xhr.addEventListener('readystatechange', function () {
-        if (this.readyState === 4) {
-          console.log(this)
-          console.log(typeof this.responseText)
-          let auth = JSON.parse(this.responseText)
-          // console.log(auth.url)
-          return new Promise((resolve, reject) => {
-            commit({
-              type: 'setAuthUrl',
-              url: auth.url
-            })
-          })
+        if (xhr.readyState === 4) {
+          // console.log(xhr)
+          // console.log(xhr.responseText) // debug
+          let response = JSON.parse(xhr.responseText)
+          // console.log(response)
+          commit('setAuthUrl', response)
         }
       })
-      // open and send the XHR
-      xhr.open('get', 'http://127.0.0.1:8079/api/auth/url')
+
+      // xhr.open('GET', `${apihost}/api`)
+      xhr.open('GET', `${apihost}/api/auth/url`)
+      xhr.withCredentials = true
+      xhr.setRequestHeader('cache-control', 'no-cache')
+      xhr.send()
+      // console.log(xhr)
+    },
+    apiSetToken ({ commit }, authCode) {
+      let xhr = new XMLHttpRequest()
+      xhr.addEventListener('readystatecange', function () {
+        if (xhr.readyState === 4 && xhr.status === 204) {
+          commit('setTokenRecieved')
+        }
+      })
+
+      xhr.open('POST', `${apihost}/api/auth/code/${authCode}`)
+      xhr.withCredentials = true
       xhr.setRequestHeader('cache-control', 'no-cache')
       xhr.send()
     }
   }
 })
 
-// function urlHandler () {
-//   console.log(this.response)
+// function sendRequest (method, path) {
+//   let api = 'http://localhost:8079'
+//   let xhr = new XMLHttpRequest()
+//   xhr.open(method, `${api}${path}`)
+//   xhr.withCredentials = true
+//   xhr.addEventListener('readystatechange', () => {
+//     if (xhr.readyState === 4) return xhr
+//   })
+//   xhr.send()
 // }
