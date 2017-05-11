@@ -22,7 +22,7 @@
     "googleapis": "^19.0.0",
     "vue": "^2.2.2",
     "vue-router": "^2.2.0",
-    "vuex": "^2.2.1"
+    "vuex": "^2.3.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",
