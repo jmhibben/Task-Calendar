@@ -7,23 +7,18 @@ import Vuex from 'vuex'
 // This lets us pass the store object through the entire app as `this.$state`
 Vue.use(Vuex)
 
+const apihost = 'http://localhost:8079'
+
 export default new Vuex.Store({
   state: {
     // initially set to null- there's no way we can know what these will be ahead of time
     auth: {
       url: null,
-      code: null,
-      token: null
+      tokenSet: false
     }
     // authClient: oauthClient
   },
   getters: {
-    getAuthCode: state => {
-      return state.auth.code
-    },
-    getAuthToken: state => {
-      return state.auth.token
-    }
   },
   // Mutations MUST be called in synchronous code
   // For async calls, use actions
@@ -32,15 +27,12 @@ export default new Vuex.Store({
 
     // Uses the auth code provided by OAuth redirected back to the app
     // We're storing this to ensure that we can refresh the token if necessary
-    setAuthCode: (state, auth) => {
-      state.auth.code = auth.code
-    },
-    // Uses the token returned by oauthClient.getToken
-    setAuthToken: (state, auth) => {
-      state.auth.token = auth.token
-    },
     setAuthUrl: (state, auth) => {
+      // console.log(auth.url)
       state.auth.url = auth.url
+    },
+    setTokenRecieved: (state) => {
+      state.auth.tokenSet = true
     }
   },
   // Using argument destructuring in actions to simplify use
