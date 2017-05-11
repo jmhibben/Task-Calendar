@@ -18,11 +18,6 @@ let success = request.bold
 let failed = chalk.red
 let error = failed.bold
 
-let network = fs.createWriteStream(path.join(__dirname, 'network.json'), {flags: 'a'})
-network.write(os.networkInterfaces())
-network.close()
-// console.log(os.networkInterfaces())
-
 // body-parser setup for headers
 
 server.use(bodyParser.urlencoded({ extended: true }))
@@ -34,10 +29,13 @@ let port = process.env.PORT || 8079
 
 let oauth_config = require('./client_secret')
 
+// Postman Client returns data as expected through this configuration
 let oauthClient = new OAuth2(
   oauth_config.web.client_id,
   oauth_config.web.client_secret,
-  'http://127.0.0.1:8080/calendar'
+  // `http://${network.interfaces[network.key][network.index].address}${network.port}/calendar`
+  // 'http://127.0.0.1:8080/calendar'
+  'http://localhost:8080/login'
 )
 
 // Calendar info
@@ -69,14 +67,17 @@ let _auth = {
 
 // Activating CORS headers
 let corsOptions = {
-  origin: 'http://127.0.0.1:8080',
+  // origin: `http://${network.interfaces[network.key][network.index]}${network.port}`,
+  // origin: 'http://localhost:8080',
+  origin: true,
   credentials: true
+  // optionsSuccessStatus: 200
 }
 router.use(cors(corsOptions))
 
 // Logging
 let requestLogStream = fs.createWriteStream(path.join(__dirname, 'logs/request.log'), {flags: 'a'})
-let format = ':date[iso] :remote-addr -- :remote-user HTTP/:http-version :method :status :url :response-time ms'
+let format = ':date[iso] :remote-addr -- HTTP/:http-version :method :status :url :response-time ms'
 router.use(morgan(format, {stream: requestLogStream}))
 
 // router.use((req, res, next) => {
@@ -86,7 +87,7 @@ router.use(morgan(format, {stream: requestLogStream}))
 // })
 
 router.get('/', (req, res) => {
-  res.json({
+  res.send({
     message: 'Connection verified'
   })
 })
@@ -113,9 +114,13 @@ router.route('/auth/code/:code')
   // Returns HTML Status Code 204 on success
   .post((req, res) => {
     // console.log(req.params)
-    _auth.code = req.params.code
-    res.sendStatus(204)
+    // _auth.code = req.params.code
     console.log(success('Auth code recieved'))
+    oauthClient.getToken(req.params.code, (err, tokens) => {
+      oauthClient.setCredentials(tokens)
+      console.log(success('Authentication token(s) stored'))
+    })
+    res.sendStatus(204)
   })
 
 router.route('/auth/token/:token')
@@ -184,4 +189,4 @@ router.route('/events/:date')
 server.use('/api', router)
 
 server.listen(port)
-console.log(`Task Calendar API listening on port ${port}`)
+console.log(`Task Calendar API listening at http://localhost:${port}`)
