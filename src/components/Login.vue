@@ -9,16 +9,32 @@
 export default {
   name: 'login',
   data () {
+    if (this.$route.query !== null || this.$route.query !== undefined) {
+      this.$store.dispatch(this.$route.query.code)
+        .then(() => {
+          this.$router.push('calendar')
+        }).catch((err) => {
+          console.error('Something went wrong processing the authentication:')
+          console.error(err)
+        })
+    }
+    // no need for a near-instant redirect!
     return {
       url: null
     }
   },
   methods: {
     showConsent () {
-      console.log(this.$store.dispatch('showLogin')
+      this.$store.dispatch('apiShowLogin')
         .then(() => {
-          window.location.href = this.$store.state.auth.url
-        }))
+          // console.log(this.$store.state.auth.url)
+          // Redirect to the consent page
+          this.url = this.$store.state.auth.url
+          document.location = this.url
+        }).catch((err) => {
+          console.error('Unable to redirect:')
+          console.error(err)
+        })
     }
   }
 }
