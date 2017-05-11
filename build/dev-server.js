@@ -15,6 +15,8 @@ var webpackConfig = process.env.NODE_ENV === 'testing'
   ? require('./webpack.prod.conf')
   : require('./webpack.dev.conf')
 
+let cors = require('cors')
+
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
 // automatically open browser, if not set will be false
@@ -97,3 +99,7 @@ module.exports = {
     server.close()
   }
 }
+
+// start the API server
+const spawn = require('child_process').spawn
+const api = spawn('node', ['server/api-server.js'])
