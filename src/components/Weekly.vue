@@ -32,37 +32,10 @@ that task's info? -->
 
   <!-- FIXME: needs to dynamically assign "alternativeRow" -->
   <tbody>
-    <tr class="alternateRow">
-      <td>9:00 AM</td>
+    <tr :altRow='altRow'>
+      <td>{{ rowHour }}</td>
       <timeSlot :description='description' :startTime='startTime'
       :endTime='endTime' :color='color'></timeSlot>
-    </tr>
-    <tr>
-      <td>10:00 AM</td>
-    </tr>
-    <tr class="alternateRow">
-      <td>11:00 AM</td>
-    </tr>
-    <tr>
-      <td>12:00 PM</td>
-    </tr>
-    <tr class="alternateRow">
-      <td>1:00 PM</td>
-    </tr>
-    <tr>
-      <td>2:00 PM</td>
-    </tr>
-    <tr class="alternateRow">
-      <td>3:00 PM</td>
-    </tr>
-    <tr>
-      <td>4:00 PM</td>
-    </tr>
-    <tr class="alternateRow">
-      <td>5:00 PM</td>
-    </tr>
-    <tr>
-      <td>6:00 PM</td>
     </tr>
   </tbody>
   </table>
@@ -89,6 +62,9 @@ that task's info? -->
     data () {
       return {
         weekStart: '',
+        taskNav: '',
+        altRow: false,
+        rowHour: taskContainer.startTime + ':00',
         description: taskContainer.description,
         startTime: taskContainer.startTime,
         endTime: taskContainer.endTime,
