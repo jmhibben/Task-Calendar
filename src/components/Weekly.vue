@@ -1,10 +1,19 @@
 <template>
+<!-- FIXME: is this <div> and class tag necessary? -->
 <div class="content">
-<header>Week of 04-02-2017</header>
+<!-- FIXME: needs to load first day of week in 'weekStart' -->
+<header>Week of {{ weekStart }}</header>
 
 <nav>
+  <!-- FIXME: clicking back should send user back to calendar view -->
   <a class="button prev">Back</a>
 </nav>
+
+<!-- FIXME: need to dynamically create rows based on tasks -->
+<!-- FIXME: add dates to table header? -->
+<!-- FIXME: default hours listed? -->
+<!-- FIXME: clicking task should send user to task view with
+that task's info? -->
 
 <article>
   <table>
@@ -20,176 +29,40 @@
       <th>Saturday</th>
     </tr>
   </thead>
+
+  <!-- FIXME: needs to dynamically assign "alternativeRow" -->
   <tbody>
-    <tr>
-      <td>8:00 AM</td>
-      <td></td>
-      <td class="overlap monday">Doctor's Appointment</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
     <tr class="alternateRow">
       <td>9:00 AM</td>
-      <td></td>
-      <td class="monday"></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <timeSlot></timeSlot>
+      <timeSlot :description='description' :startTime='startTime'
+      :endTime='endTime' :color='color'></timeSlot>
     </tr>
     <tr>
       <td>10:00 AM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="overlap saturday"></td>
     </tr>
     <tr class="alternateRow">
       <td>11:00 AM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="overlap saturday"></td>
     </tr>
     <tr>
       <td>12:00 PM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="overlap saturday"></td>
     </tr>
     <tr class="alternateRow">
       <td>1:00 PM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="overlap saturday"></td>
     </tr>
     <tr>
       <td>2:00 PM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="overlap saturday"></td>
     </tr>
     <tr class="alternateRow">
       <td>3:00 PM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="overlap saturday"></td>
     </tr>
     <tr>
       <td>4:00 PM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="overlap saturday"></td>
     </tr>
     <tr class="alternateRow">
       <td>5:00 PM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="overlap saturday"></td>
     </tr>
     <tr>
       <td>6:00 PM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td class="saturday"></td>
-    </tr>
-    <tr class="alternateRow">
-      <td>7:00 PM</td>
-      <td></td>
-      <td></td>
-      <td class="overlap tuesday">Bowling practice</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>8:00 PM</td>
-      <td></td>
-      <td></td>
-      <td class="overlap tuesday"></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr class='alternateRow'>
-      <td>9:00 PM</td>
-      <td></td>
-      <td></td>
-      <td class="tuesday"></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>10:00 PM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr class="alternateRow">
-      <td>11:00 PM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>12:00 AM</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
     </tr>
   </tbody>
   </table>
@@ -201,22 +74,47 @@
 <script>
   import TimeSlot from './TimeSlot.vue'
 
-  export default {
-    name: 'weekly',
-    components: {
-      timeSlot: TimeSlot
-
-    }
+  // FIXME: dummy container needs integration with state
+  let taskContainer = {
+    date: '05/13/17',
+    description: 'Karate Tournament',
+    startTime: 9,
+    endTime: 18,
+    color: 'yellow'
   }
 
+  export default {
+    name: 'weekly',
+
+    data () {
+      return {
+        weekStart: '',
+        description: taskContainer.description,
+        startTime: taskContainer.startTime,
+        endTime: taskContainer.endTime,
+        color: taskContainer.color
+      }
+    },
+
+    // FIXME: not working at all, will revisit
+    methods: {
+      getWeekStart (taskContainer) {
+        data => {
+          this.weekStart = taskContainer.date
+        }
+      }
+    },
+
+    components: {
+      timeSlot: TimeSlot
+    }
+  }
 </script>
 
-
+<!-- FIXME: <style> needs further cleaning and replacing with Skeleton -->
+<!-- FIXME: set variables for empty cells and increment variable value for
+alternateRow? -->
 <style scoped lang="scss">
-  $overdue: rgb(240, 165, 165);
-  $nodate: rgb(250, 200, 130);
-  $completed: rgb(140, 230, 170);
-
   html, body {
     font-family: Roboto, "Libre Sans", "Ubuntu Sans", "Open Sans", sans-serif;
   }
@@ -250,14 +148,6 @@
         &.prev {
           float: left;
         }
-
-        &.next {
-          float: right;
-        }
-      }
-
-      &:after {
-        clear: both;
       }
     }
 
@@ -293,27 +183,6 @@
         border-bottom: none;
       }
 
-      &.monday {
-        background-color: purple;
-        &:hover {
-          background-color: purple;
-        }
-      }
-
-      &.tuesday {
-        background-color: orange;
-        &:hover {
-          background-color: orange;
-        }
-      }
-
-      &.saturday {
-        background-color: yellow;
-        &:hover {
-          background-color: yellow;
-        }
-      }
-
       &:hover {
         background-color: #999;
       }
@@ -321,56 +190,6 @@
     }
     td {
       height: 40px;
-    }
-  }
-
-  .task-count {
-    background-color: rgb(160, 180, 240);
-    border: hidden;
-    border-radius: 13px;
-
-    &.late {
-      background-color: $overdue;
-    }
-  }
-
-  .other-tasks {
-    background-color: lightgrey;
-    margin: 10px 0;
-    left: 5%;
-    padding: 10px;
-    position: absolute;
-    top: 60px;
-
-    .dateless .task-count {
-      background-color: $nodate;
-    }
-
-    .overdue .task-count {
-      background-color: $overdue;
-    }
-
-    .completed .task-count {
-      background-color: $completed;
-    }
-
-    .month, .dateless, .overdue, .completed {
-      border-radius: 8px;
-      padding: 8px;
-
-      .task-count {
-        font-size: 0.9rem;
-        margin-right: 5px;
-        padding: 5px 10px;
-        text-align: center;
-      }
-    }
-
-    .task-info {
-      font-weight: bold;
-      font-size: 1.4rem;
-      left: 20px;
-      position: relative;
     }
   }
 

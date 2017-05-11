@@ -1,18 +1,13 @@
 <template>
-  <td :bgcolor='color' :rowspan='endTime - startTime'>{{ description }}</td>
+  <!--FIXME:using deprecated 'bgcolor' attribute until i understand how to send
+  values to the script tag-->
+  <td :bgcolor='color' :rowspan='endTime - startTime + 1'>{{ description }}</td>
 </template>
 
 
 <script>
   export default {
-    data () {
-      return {
-        description: 'Karate Tournament',
-        startTime: 14,
-        endTime: 17,
-        color: 'yellow'
-      }
-    }
+    props: ['description', 'startTime', 'endTime', 'color']
   }
 </script>
 
