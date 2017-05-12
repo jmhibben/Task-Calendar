@@ -48,12 +48,43 @@ that task's info? -->
   import TimeSlot from './TimeSlot.vue'
 
   // FIXME: dummy container needs integration with state
-  let taskContainer = {
+  let task1 = {
     date: '05/13/17',
     description: 'Karate Tournament',
     startTime: 9,
     endTime: 18,
-    color: 'yellow'
+    color: 'yellow',
+    weekday: 7
+  }
+
+  let task2 = {
+    date: '05/10/17',
+    description: 'Bowling Practice',
+    startTime: 19,
+    endTime: 21,
+    color: 'red',
+    weekday: 4
+  }
+
+  let task3 = {
+    date: '05/08/17',
+    description: 'Doctor\'s Appointment',
+    startTime: 8,
+    endTime: 8,
+    color: 'purple',
+    weekday: 2
+  }
+
+  let taskArray = [task1, task2, task3]
+
+  function getTableHeight (taskArray) {
+    let earliest = 8
+    let latest = 17
+    for (let task in taskArray) {
+      if (task.startTime < earliest) { earliest = task.startTime }
+      if (task.endTime > latest) { latest = task.endTime }
+    }
+    return [earliest, latest]
   }
 
   export default {
@@ -61,7 +92,7 @@ that task's info? -->
 
     data () {
       return {
-        weekStart: '',
+        weekStart: '05/07/17',
         taskNav: '',
         altRow: false,
         rowHour: taskContainer.startTime + ':00',
@@ -76,7 +107,7 @@ that task's info? -->
     methods: {
       getWeekStart (taskContainer) {
         data => {
-          this.weekStart = taskContainer.date
+          this.weekStart = ''
         }
       }
     },
