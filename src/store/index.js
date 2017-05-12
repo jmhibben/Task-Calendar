@@ -1,8 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import moment from 'moment'
-// google api files
-// import { oauthClient } from '../assets/api/oauth'
 
 // This lets us pass the store object through the entire app as `this.$state`
 Vue.use(Vuex)
