@@ -1,54 +1,77 @@
 <template>
   <div class="content">
-  <header>Edit Event</a></header>
+  <header>{{title}} {{$route.params.id}}</a></header>
   <nav>
-    <a href="#/" class="button prev">Calendar View</a>
-    <a href="#/week" class="button next">Weekly View</a>
+    <router-link to="/" class="button prev">Calendar View</router-link>
+    <router-link to="/Week" class="button next">Weekly View</router-link>
   </nav>
   <article>
-    <form>
-      <div id="label">Name of Event: <input id="textbox" type='textarea' placeholder="Name of Event"></div>
-      <br>
+    <form id="taskForm">
+      <div id="label">Name of Event: <textarea id="textbox">{{eventName}}</textarea></div>
+      <br><br>
 
       <div id="label">
-      Description:&nbsp&nbsp <textarea id="textbox" style="resize:none"placeholder="Description Here"></textarea>
-      </div><br>
+      Description:&nbsp&nbsp <textarea id="textbox">{{desc}}</textarea>
+      </div><br><br>
 
-      <div id="label">Start Time: <select name="startTime">
-      <option value="time" v-for="n in 12">{{n}}:00</option>
+      <div id="label">Start Time:
+      <select v-model="startN">
+      <option>12:00</option>
+      <option v-for="n in 11">{{n}}:00</option>
       </select>&nbsp&nbsp
 
-      <select name="dayornight">
-      <option value="am">am</option>
-      <option value="am">pm</option>
-      </select></div>&nbsp&nbsp&nbsp
+      <select v-model="selectedStart">
+      <option>AM</option>
+      <option>PM</option>
+      </select></div><br>
 
-      <div id="label">End Time: <select name="endTime">
-      <option value="" v-for="n in 12">{{n}}:00</option>
-      </select>&nbsp&nbsp<select name="dayornight">
-      <option value="am">pm</option>
-      <option value="am">am</option>
-      </select></div>
-      <br>
+      <div id="label">End Time:
+      <select v-model="endN">
+      <option>12:00</option>
+      <option v-for="n in 11">{{n}}:00</option>
+      </select>&nbsp&nbsp
 
-      <div id="label">Color: <select name="colors">
-      <option value="red">Red</option>
-      <option value="blue">Blue</option>
-      <option value="yellow">Yellow</option>
-      <option value="green">Green</option>
-      <option value="purple">Purple</option>
-      <option value="grey">Grey</option>
-      </select></div>
-      <br>
+      <select v-model="selectedEnd">
+      <option>PM</option>
+      <option>AM</option>
+      </select></div><br>
 
-      <div><input type="submit" value="Submit"></div>
+
+      <div id="label">Color:
+      <select v-model="selectedColor">
+      <option>Red</option>
+      <option>Blue</option>
+      <option>Yellow</option>
+      <option>Orange</option>
+      <option>Purple</option>
+      <option>Green</option>
+      </select></div><br>
+      <button type='submit' class='btn btn-default' v-on:click='submitForm'>Search</button>
     </form>
   </article>
   </div>
 </template>
 
 <script>
-  export default {}
+  export default {
+    data () {
+      return {
+        title: 'Add Event',
+        eventName: 'Name of Event Here',
+        desc: 'Description of Even Here',
+        startN: '12:00',
+        selectedStart: 'AM',
+        selectedEnd: 'PM',
+        endN: '12:00',
+        selectedColor: 'Red'
+      }
+    },
+    methods: {
+      submitForm: function () {
+        document.getElementById('taskForm').submit()
+      }
+    }
+  }
 </script>
 
 <style scoped lang="scss">
@@ -119,5 +142,12 @@
     position:relative;
     text-align: left;
     }
+
+    textarea {
+    resize: none;
+    float: right;
+    width: 50%;
+    }
+
 }
 </style>

@@ -5,7 +5,6 @@ import Weekly from '@/components/Weekly'
 import Task from '@/components/Task'
 
 Vue.use(Router)
-
 export default new Router({
   routes: [
     {
@@ -22,6 +21,11 @@ export default new Router({
     {
       path: '/task',
       name: 'Task',
+      component: Task
+    },
+    {
+      path: '/task/:eventID',
+      name: 'TaskEvent',
       component: Task
     }
   ]
