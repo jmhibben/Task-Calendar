@@ -8,7 +8,6 @@ if (!process.env.NODE_ENV) {
 var opn = require('opn')
 var path = require('path')
 var express = require('express')
-const cors = require('cors')
 var webpack = require('webpack')
 var proxyMiddleware = require('http-proxy-middleware')
 var webpackConfig = process.env.NODE_ENV === 'testing'
