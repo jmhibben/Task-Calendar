@@ -45,7 +45,7 @@ export default new Vuex.Store({
 
       xhr.addEventListener('readystatechange', function () {
         if (xhr.readyState === 4) {
-          // console.log(xhr)
+          console.log(xhr)
           // console.log(xhr.responseText) // debug
           let response = JSON.parse(xhr.responseText)
           // console.log(response)
@@ -64,6 +64,7 @@ export default new Vuex.Store({
       let xhr = new XMLHttpRequest()
       xhr.addEventListener('readystatecange', function () {
         if (xhr.readyState === 4 && xhr.status === 204) {
+          console.log(xhr.response)
           commit('setTokenRecieved')
         }
       })
