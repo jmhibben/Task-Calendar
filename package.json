@@ -22,6 +22,7 @@
   "dependencies": {
     "cors": "^2.8.3",
     "googleapis": "^19.0.0",
+    "loggerr": "^1.7.0",
     "morgan": "^1.8.1",
     "vue": "^2.2.2",
     "vue-router": "^2.2.0",
