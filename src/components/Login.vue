@@ -9,16 +9,19 @@
 export default {
   name: 'login',
   data () {
-    if (this.$route.query !== null || this.$route.query !== undefined) {
-      this.$store.dispatch(this.$route.query.code)
+    console.log(typeof this.$route.query === 'object')
+    if (this.$route.query === 'object' && this.$route.query.code !== null) {
+      console.log('Preparing to change route...')
+      this.$store.dispatch('apiSetToken', `${this.$route.query.code}`)
         .then(() => {
+          console.log('Changing route...')
           this.$router.push('calendar')
         }).catch((err) => {
           console.error('Something went wrong processing the authentication:')
           console.error(err)
         })
     }
-    // no need for a near-instant redirect!
+    // no need for a near-instant redirect here!
     return {
       url: null
     }
@@ -27,7 +30,7 @@ export default {
     showConsent () {
       this.$store.dispatch('apiShowLogin')
         .then(() => {
-          // console.log(this.$store.state.auth.url)
+          console.log(this.$store.state.auth.url)
           // Redirect to the consent page
           this.url = this.$store.state.auth.url
           document.location = this.url
