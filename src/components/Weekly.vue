@@ -1,18 +1,17 @@
 <template>
 <!-- FIXME: is this <div> and class tag necessary? -->
 <div class="content">
-<!-- FIXME: needs to load first day of week in 'weekStart' -->
+<!-- FIXME: needs to load first day of week as 'weekStart' -->
 <header>Week of {{ weekStart }}</header>
 
 <nav>
-  <!-- FIXME: clicking back should send user back to calendar view -->
   <a class="button prev" href="#">Back</a>
 </nav>
 
 <!-- FIXME: need to dynamically create rows based on tasks -->
-<!-- FIXME: add dates to table header? -->
-<!-- FIXME: default hours listed? -->
-<!-- FIXME: clicking task should send user to task view with
+<!-- TODO: add dates to table header? -->
+<!-- TODO: default hours listed? -->
+<!-- TODO: clicking task should send user to task view with
 that task's info? -->
 
 <article>
@@ -30,17 +29,14 @@ that task's info? -->
     </tr>
   </thead>
 
-  <!-- FIXME: needs to dynamically assign "alternativeRow" -->
+  <!-- TODO: needs to dynamically assign "alternativeRow" class -->
   <tbody>
-    <tr v-for="i in (latest-earliest)">
-
-      <td :timestamp="setTimestamp(earliest + i)">
-        {{ (earliest + i) + ':00 ' + timestamp}}</td>
-
-      <td v-for="j in 7" :curTask="taskCheck(j)">
-        <timeSlot :description='curTask.description' :startTime='curTask.startTime'
-                  :endTime='curTask.endTime' :color='curTask.color'></timeSlot>
-      </td>
+    <tr v-for="row in height + 1">
+      <td :timestamp="setTimestamp(row - 1)">{{ timestamp }}</td>
+      <!-- FIXME: displaying tasks incorrectly -->
+      <timeSlot v-for="col in 7" :curTask="taskCheck(col, row - 1)"
+      :description='curTask.description' :startTime='curTask.startTime'
+      :endTime='curTask.endTime' :color='curTask.color'></timeSlot>
     </tr>
   </tbody>
   </table>
@@ -50,95 +46,102 @@ that task's info? -->
 
 
 <script>
-  import TimeSlot from './TimeSlot.vue'
+import TimeSlot from './TimeSlot.vue'
 
-  // FIXME: dummy container needs integration with state
-  export default {
-    name: 'weekly',
+// TODO: dummy container needs integration with state
+export default {
+  name: 'weekly',
 
-    data () {
-      return {
-        weekStart: '05/07/17',
-        taskNav: '',
-        altRow: false,
-        curTask: {
-          date: '',
-          description: '',
-          startTime: 100,
-          endTime: 0,
-          color: '',
-          weekday: 0
+  data () {
+    return {
+      altRow: false,
+      blank: {
+        date: '',
+        description: '',
+        startTime: 100,
+        endTime: 0,
+        color: '',
+        weekday: 0
+      },
+      curTask: this.blank,
+      earliest: 10,
+      height: 7,
+      latest: 17,
+      taskArray: [
+        {
+          color: 'yellow',
+          date: '05/13/17',
+          description: 'Karate Tournament',
+          endTime: 18,
+          startTime: 9,
+          weekday: 7
         },
-        taskArray: [
-          {
-            date: '05/13/17',
-            description: 'Karate Tournament',
-            startTime: 9,
-            endTime: 18,
-            color: 'yellow',
-            weekday: 7
-          },
 
-          {
-            date: '05/10/17',
-            description: 'Bowling Practice',
-            startTime: 19,
-            endTime: 21,
-            color: 'red',
-            weekday: 4
-          },
+        {
+          color: 'red',
+          date: '05/10/17',
+          endTime: 21,
+          description: 'Bowling Practice',
+          startTime: 19,
+          weekday: 4
+        },
 
-          {
-            date: '05/08/17',
-            description: 'Doctor\'s Appointment',
-            startTime: 8,
-            endTime: 8,
-            color: 'purple',
-            weekday: 2
-          }
-        ],
-        earliest: 10,
-        latest: 17,
-        timestamp: 'AM'
-      }
-    },
-
-    // FIXME: will need to update with proper week start date dynamically
-    methods: {
-      getWeekStart (taskArray) { this.weekStart = taskArray[0].date },
-
-      setTableHeight (taskArray) {
-        for (let task of taskArray) {
-          if (task.startTime < this.earliest) { this.earliest = task.startTime }
-          if (task.endTime > this.latest) { this.latest = task.endTime }
+        {
+          color: 'purple',
+          date: '05/08/17',
+          description: 'Doctor\'s Appointment',
+          endTime: 8,
+          startTime: 8,
+          weekday: 2
         }
-      },
-
-      setTimestamp (hour) {
-        if (hour >= 12) this.timestamp = 'PM'
-        else this.timestamp = 'AM'
-      },
-
-      taskCheck (index) {
-        for (let task of this.taskArray) {
-          if (task.weekday === index) this.curTask = task
-        }
-      }
-    },
-
-    mounted: function () {
-      this.setTableHeight(this.taskArray)
-      this.getWeekStart(this.taskArray)
-    },
-
-    components: {
-      timeSlot: TimeSlot
+      ],
+      taskNav: '',
+      timestamp: this.earliest + ':00AM',
+      weekStart: '05/07/17'
     }
+  },
+
+  methods: {
+    // Get/set first date of the week.
+    getWeekStart (taskArray) { this.weekStart = taskArray[0].date },
+
+    // Set the start and end points for the table based on task start/end times.
+    setTableHeight (taskArray) {
+      for (let task of taskArray) {
+        if (task.startTime < this.earliest) { this.earliest = task.startTime }
+        if (task.endTime > this.latest) { this.latest = task.endTime }
+      }
+      this.height = this.latest - this.earliest
+    },
+
+    // Set the timestamp to be used in the current row.
+    setTimestamp (hour) {
+      if (this.earliest + hour >= 12) this.timestamp = (this.earliest + hour) + ':00PM'
+      else this.timestamp = (this.earliest + hour) + ':00AM'
+    },
+
+    // Check each time slot to see if a task should be inserted.
+    taskCheck (index, hour) {
+      for (let task of this.taskArray) {
+        if (task.weekday === index && task.endTime > hour) this.curTask = task
+        else this.curTask = this.blank  // Insert a blank time slot if no task
+      }
+    }
+  },
+
+  mounted: function () {
+    this.setTableHeight(this.taskArray)
+    this.getWeekStart(this.taskArray)
+  },
+
+  components: {
+    timeSlot: TimeSlot
   }
+}
 </script>
 
-<!-- FIXME: <style> needs further cleaning and replacing with Skeleton -->
-<!-- FIXME: set variables for empty cells and increment variable value for
+<!-- TODO: <style> needs further cleaning and replacing with Skeleton -->
+<!-- TODO: set variables for empty cells and increment variable value for
 alternateRow? -->
 <style scoped lang="scss">
   html, body {
