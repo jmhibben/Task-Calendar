@@ -6,7 +6,7 @@
 
 <nav>
   <!-- FIXME: clicking back should send user back to calendar view -->
-  <a class="button prev">Back</a>
+  <a class="button prev" href="#">Back</a>
 </nav>
 
 <!-- FIXME: need to dynamically create rows based on tasks -->
@@ -32,10 +32,15 @@ that task's info? -->
 
   <!-- FIXME: needs to dynamically assign "alternativeRow" -->
   <tbody>
-    <tr :altRow='altRow'>
-      <td>{{ rowHour }}</td>
-      <timeSlot :description='description' :startTime='startTime'
-      :endTime='endTime' :color='color'></timeSlot>
+    <tr v-for="i in (latest-earliest)">
+
+      <td :timestamp="setTimestamp(earliest + i)">
+        {{ (earliest + i) + ':00 ' + timestamp}}</td>
+
+      <td v-for="j in 7" :curTask="taskCheck(j)">
+        <timeSlot :description='curTask.description' :startTime='curTask.startTime'
+                  :endTime='curTask.endTime' :color='curTask.color'></timeSlot>
+      </td>
     </tr>
   </tbody>
   </table>
@@ -48,45 +53,6 @@ that task's info? -->
   import TimeSlot from './TimeSlot.vue'
 
   // FIXME: dummy container needs integration with state
-  let task1 = {
-    date: '05/13/17',
-    description: 'Karate Tournament',
-    startTime: 9,
-    endTime: 18,
-    color: 'yellow',
-    weekday: 7
-  }
-
-  let task2 = {
-    date: '05/10/17',
-    description: 'Bowling Practice',
-    startTime: 19,
-    endTime: 21,
-    color: 'red',
-    weekday: 4
-  }
-
-  let task3 = {
-    date: '05/08/17',
-    description: 'Doctor\'s Appointment',
-    startTime: 8,
-    endTime: 8,
-    color: 'purple',
-    weekday: 2
-  }
-
-  let taskArray = [task1, task2, task3]
-
-  function getTableHeight (taskArray) {
-    let earliest = 8
-    let latest = 17
-    for (let task in taskArray) {
-      if (task.startTime < earliest) { earliest = task.startTime }
-      if (task.endTime > latest) { latest = task.endTime }
-    }
-    return [earliest, latest]
-  }
-
   export default {
     name: 'weekly',
 
@@ -95,21 +61,74 @@ that task's info? -->
         weekStart: '05/07/17',
         taskNav: '',
         altRow: false,
-        rowHour: taskContainer.startTime + ':00',
-        description: taskContainer.description,
-        startTime: taskContainer.startTime,
-        endTime: taskContainer.endTime,
-        color: taskContainer.color
+        curTask: {
+          date: '',
+          description: '',
+          startTime: 100,
+          endTime: 0,
+          color: '',
+          weekday: 0
+        },
+        taskArray: [
+          {
+            date: '05/13/17',
+            description: 'Karate Tournament',
+            startTime: 9,
+            endTime: 18,
+            color: 'yellow',
+            weekday: 7
+          },
+
+          {
+            date: '05/10/17',
+            description: 'Bowling Practice',
+            startTime: 19,
+            endTime: 21,
+            color: 'red',
+            weekday: 4
+          },
+
+          {
+            date: '05/08/17',
+            description: 'Doctor\'s Appointment',
+            startTime: 8,
+            endTime: 8,
+            color: 'purple',
+            weekday: 2
+          }
+        ],
+        earliest: 10,
+        latest: 17,
+        timestamp: 'AM'
       }
     },
 
-    // FIXME: not working at all, will revisit
+    // FIXME: will need to update with proper week start date dynamically
     methods: {
-      getWeekStart (taskContainer) {
-        data => {
-          this.weekStart = ''
+      getWeekStart (taskArray) { this.weekStart = taskArray[0].date },
+
+      setTableHeight (taskArray) {
+        for (let task of taskArray) {
+          if (task.startTime < this.earliest) { this.earliest = task.startTime }
+          if (task.endTime > this.latest) { this.latest = task.endTime }
+        }
+      },
+
+      setTimestamp (hour) {
+        if (hour >= 12) this.timestamp = 'PM'
+        else this.timestamp = 'AM'
+      },
+
+      taskCheck (index) {
+        for (let task of this.taskArray) {
+          if (task.weekday === index) this.curTask = task
         }
       }
+    },
+
+    mounted: function () {
+      this.setTableHeight(this.taskArray)
+      this.getWeekStart(this.taskArray)
     },
 
     components: {
