@@ -101,17 +101,14 @@
 
 export default {
   name: 'calendar',
-  props: {
-    calRender: []
-  },
   data: function () {
     return {
       today: new Date(),
       currentDate: new Date(),
       months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
       daysInMonths: ['31', '28', '31', '30', '31', '30', '31', '31', '30', '31', '30', '31'],
-      headerDate: ''
-      // calRender: []
+      headerDate: '',
+      calRender: []
     }
   },
 
@@ -213,7 +210,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-// Need to make this mobile-ready 
+@import "../assets/skeleton/skeleton.scss";
 $overdue: rgb(240, 165, 165);
 $nodate: rgb(250, 200, 130);
 $completed: rgb(140, 230, 170);
@@ -236,13 +233,12 @@ $completed: rgb(140, 230, 170);
 
     .button {
       background-color: lightgrey;
-      border: 1px solid grey;
-      border-radius: 4px;
-      color: #333;
-      padding: 4px;
+      border: 2px lightgrey;
+      color: #333;;
       text-align: center;
+      width: 120px;
       text-decoration: none;
-      width: 80px;
+      font-family: default;
 
       &.prev {
         float: left; 
@@ -266,11 +262,11 @@ $completed: rgb(140, 230, 170);
 table {
   background-color: lightgrey;
   border-collapse: collapse;
-  border: 1px solid grey;
+  border: 2px solid lightgray;
   border-radius: 4px;
   
   th, td {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid grey;
     padding: 10px;
     text-align: left;
     vertical-align: top;
