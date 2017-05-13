@@ -20,7 +20,7 @@
 <tbody>
   <template v-for="(row, index) in this.fullArray">
   <tr :class="{ altRow: (index % 2) }">
-    <td :timestamp="setTimestamp(index)">{{ timestamp }}</td>
+    <td>{{ timestamp[index] }}</td>
     <template v-for="task in row">
     <timeSlot :description='task.description' :startTime='task.startTime'
               :endTime='task.endTime' :color='task.color'
@@ -89,7 +89,7 @@ export default {
         }
       ],
       taskNav: '',
-      timestamp: '',
+      timestamp: [],
       weekStart: ''
     }
   },
@@ -130,7 +130,7 @@ export default {
       if (start + hour > 12) stamp = (start - 12 + hour) + ':00PM'
       else if (start + hour === 12) stamp = '12:00PM'
       else stamp = (start + hour) + ':00AM'
-      this.timestamp = stamp
+      this.timestamp.push(stamp)
     },
 
     // Creates a jagged array of blank tasks and then places real tasks in their
@@ -153,6 +153,7 @@ export default {
         }
         fullArray[i] = subArray
         subArray = []
+        this.setTimestamp(i)
       }
       // add the real tasks to the array of blank tasks
       for (let task of this.taskArray) {
