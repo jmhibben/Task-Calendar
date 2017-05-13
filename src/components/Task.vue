@@ -7,12 +7,12 @@
   </nav>
   <article>
     <form id="taskForm">
-      <div id="label">Name of Event: <textarea id="textbox">{{eventName}}</textarea></div>
+      <p id="label">Name of Event: <textarea id="textbox" v-model="eventName" placeholder="Name of Event Here">{{eventName}}</textarea></p>
       <br><br>
 
-      <div id="label">
-      Description:&nbsp&nbsp <textarea id="textbox">{{desc}}</textarea>
-      </div><br><br>
+      <p id="label">
+      Description:&nbsp&nbsp <textarea id="textbox" v-model="desc" placeholder="Description of Event Here">{{desc}}</textarea>
+    </p><br><br>
 
       <div id="label">Start Time:
       <select v-model="startN">
@@ -46,7 +46,7 @@
       <option>Purple</option>
       <option>Green</option>
       </select></div><br>
-      <button type='submit' class='btn btn-default' v-on:click='submitForm'>Search</button>
+      <button type='submit' class='btn btn-default' v-on:click='submitForm'>Submit</button>
     </form>
   </article>
   </div>
@@ -57,8 +57,8 @@
     data () {
       return {
         title: 'Add Event',
-        eventName: 'Name of Event Here',
-        desc: 'Description of Even Here',
+        eventName: '',
+        desc: '',
         startN: '12:00',
         selectedStart: 'AM',
         selectedEnd: 'PM',
@@ -69,6 +69,13 @@
     methods: {
       submitForm: function () {
         document.getElementById('taskForm').submit()
+        setTimeout(1000)
+        console.log(
+          'Name: ' + this.eventName,
+          'Start Time: ' + this.startN + ' ' + this.selectedStart,
+          'End Time: ' + this.endN + ' ' + this.selectedEnd,
+          'Color: ' + this.selectedColor
+        )
       }
     }
   }
