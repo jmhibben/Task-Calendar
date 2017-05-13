@@ -1,13 +1,18 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <button class="fab">+</button>
+    <button class="fab" v-on:click="goToTask">+</button>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  methods: {
+    goToTask () {
+      this.$router.push('task')
+    }
+  }
 }
 </script>
 
