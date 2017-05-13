@@ -27,10 +27,10 @@
 
   <!-- TODO: needs to dynamically assign "alternativeRow" class -->
   <tbody>
-    <tr v-for="row in height">
-      <td :timestamp="setTimestamp(row - 1)">{{ timestamp }}</td>
+    <tr v-for="(row, index) in this.fullArray">
+      <td :timestamp="setTimestamp(index)">{{ timestamp }}</td>
       <!-- FIXME: displaying tasks incorrectly -->
-      <template v-for="task in this.fullArray">
+      <template v-for="task in row">
       <timeSlot :description='task.description' :startTime='task.startTime'
                 :endTime='task.endTime' :color='task.color'
                 :weekday='task.weekday'>
@@ -90,7 +90,7 @@ export default {
         }
       ],
       taskNav: '',
-      timestamp: this.earliest + ':00AM',
+      timestamp: '10:00AM',
       weekStart: '05/07/17'
     }
   },
@@ -106,13 +106,15 @@ export default {
         if (task.startTime < this.earliest) { this.earliest = task.startTime }
         if (task.endTime > this.latest) { this.latest = task.endTime }
       }
-      this.height = this.latest - this.earliest + 1
+      // console.log('from setTableHeight ' + this.earliest)
+      this.height = (this.latest - this.earliest + 1)
     },
 
     // Set the timestamp to be used in the current row.
     setTimestamp (hour) {
       let start = this.earliest
       let stamp = this.timestamp
+      // console.log('from setTimestamp ' + start + ' ' + stamp)
       if (start + hour > 12) stamp = (start - 12 + hour) + ':00PM'
       else if (start + hour === 12) stamp = '12:00PM'
       else stamp = (start + hour) + ':00AM'
@@ -139,6 +141,16 @@ export default {
       }
       for (let task of this.taskArray) {
         fullArray[(task.startTime - this.earliest)][(task.weekday - 1)] = task
+        if (task.endTime - task.startTime > 0) {
+          // console.log(task.description + ' height: ' + (task.endTime - task.startTime))
+          for (let i = 1; i <= task.endTime - task.startTime; i++) {
+            // console.log('length before: ' + fullArray[task.startTime - this.earliest + i].length)
+            // console.log('splicing: ' + task.description + i + ' at ' + (task.startTime - this.earliest + i) + ', ' + (task.weekday - 1))
+            fullArray[task.startTime - this.earliest + i]
+            .splice((task.weekday - 1), 1)
+            // console.log('length after: ' + fullArray[task.startTime - this.earliest + i].length)
+          }
+        }
       }
       this.fullArray = fullArray
     }
