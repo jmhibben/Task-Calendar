@@ -146,7 +146,10 @@ let oauthClient = new OAuth2(
 )
 
 // if any additional scopes are necessary, we can just add them to this
-let scopes = ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/profile']
+let scopes = [
+  'https://www.googleapis.com/auth/calendar'
+  // ,'https://www.googleapis.com/auth/profile']
+]
 log(l.debug,'Locating client\'s place of consent...')
 let url = oauthClient.generateAuthUrl({
   access_type: 'online', // explicitly declaring default
