@@ -2,8 +2,8 @@
   <div class="content">
   <header>{{title}} {{$route.params.id}}</a></header>
   <nav>
-    <router-link to="/" class="button prev">Calendar View</router-link>
-    <router-link to="/Week" class="button next">Weekly View</router-link>
+    <router-link to="/" class="button prev">Calendar</router-link>
+    <router-link to="/Week" class="button next">Week</router-link>
   </nav>
   <article>
     <form id="taskForm">
@@ -82,6 +82,7 @@
 </script>
 
 <style scoped lang="scss">
+@import "../assets/skeleton/skeleton.scss";
   $overdue: rgb(240, 165, 165);
   $nodate: rgb(250, 200, 130);
   $completed: rgb(140, 230, 170);
