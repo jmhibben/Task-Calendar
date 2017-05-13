@@ -8,12 +8,8 @@
   <a class="button prev" href="#">Back</a>
 </nav>
 
-<!-- FIXME: need to dynamically create rows based on tasks -->
 <!-- TODO: add dates to table header? -->
 <!-- TODO: default hours listed? -->
-<!-- TODO: clicking task should send user to task view with
-that task's info? -->
-
 <article>
   <table>
   <thead>
@@ -31,12 +27,15 @@ that task's info? -->
 
   <!-- TODO: needs to dynamically assign "alternativeRow" class -->
   <tbody>
-    <tr v-for="row in height + 1">
+    <tr v-for="row in height">
       <td :timestamp="setTimestamp(row - 1)">{{ timestamp }}</td>
       <!-- FIXME: displaying tasks incorrectly -->
-      <timeSlot v-for="col in 7" :curTask="taskCheck(col, row - 1)"
-      :description='curTask.description' :startTime='curTask.startTime'
-      :endTime='curTask.endTime' :color='curTask.color'></timeSlot>
+      <template v-for="task in this.fullArray">
+      <timeSlot :description='task.description' :startTime='task.startTime'
+                :endTime='task.endTime' :color='task.color'
+                :weekday='task.weekday'>
+      </timeSlot>
+      </template>
     </tr>
   </tbody>
   </table>
@@ -55,16 +54,8 @@ export default {
   data () {
     return {
       altRow: false,
-      blank: {
-        date: '',
-        description: '',
-        startTime: 100,
-        endTime: 0,
-        color: '',
-        weekday: 0
-      },
-      curTask: this.blank,
       earliest: 10,
+      fullArray: [],
       height: 7,
       latest: 17,
       taskArray: [
@@ -73,6 +64,7 @@ export default {
           date: '05/13/17',
           description: 'Karate Tournament',
           endTime: 18,
+          placed: false,
           startTime: 9,
           weekday: 7
         },
@@ -82,6 +74,7 @@ export default {
           date: '05/10/17',
           endTime: 21,
           description: 'Bowling Practice',
+          placed: false,
           startTime: 19,
           weekday: 4
         },
@@ -91,6 +84,7 @@ export default {
           date: '05/08/17',
           description: 'Doctor\'s Appointment',
           endTime: 8,
+          placed: false,
           startTime: 8,
           weekday: 2
         }
@@ -103,6 +97,7 @@ export default {
 
   methods: {
     // Get/set first date of the week.
+    // FIXME: wrong date
     getWeekStart (taskArray) { this.weekStart = taskArray[0].date },
 
     // Set the start and end points for the table based on task start/end times.
@@ -111,27 +106,48 @@ export default {
         if (task.startTime < this.earliest) { this.earliest = task.startTime }
         if (task.endTime > this.latest) { this.latest = task.endTime }
       }
-      this.height = this.latest - this.earliest
+      this.height = this.latest - this.earliest + 1
     },
 
     // Set the timestamp to be used in the current row.
     setTimestamp (hour) {
-      if (this.earliest + hour >= 12) this.timestamp = (this.earliest + hour) + ':00PM'
-      else this.timestamp = (this.earliest + hour) + ':00AM'
+      let start = this.earliest
+      let stamp = this.timestamp
+      if (start + hour > 12) stamp = (start - 12 + hour) + ':00PM'
+      else if (start + hour === 12) stamp = '12:00PM'
+      else stamp = (start + hour) + ':00AM'
+      this.timestamp = stamp
     },
 
-    // Check each time slot to see if a task should be inserted.
-    taskCheck (index, hour) {
-      for (let task of this.taskArray) {
-        if (task.weekday === index && task.endTime > hour) this.curTask = task
-        else this.curTask = this.blank  // Insert a blank time slot if no task
+    createFullArray () {
+      let blank = {
+        date: '',
+        description: '',
+        startTime: 0,
+        endTime: 0,
+        color: '',
+        weekday: 0
       }
+      let fullArray = []
+      let subArray = []
+      for (let i = 0; i < this.height; i++) {
+        for (let j = 0; j < 7; j++) {
+          subArray[j] = blank
+        }
+        fullArray[i] = subArray
+        subArray = []
+      }
+      for (let task of this.taskArray) {
+        fullArray[(task.startTime - this.earliest)][(task.weekday - 1)] = task
+      }
+      this.fullArray = fullArray
     }
   },
 
   mounted: function () {
     this.setTableHeight(this.taskArray)
     this.getWeekStart(this.taskArray)
+    this.createFullArray()
   },
 
   components: {
@@ -139,6 +155,7 @@ export default {
   }
 }
 </script>
+
 
 <!-- TODO: <style> needs further cleaning and replacing with Skeleton -->
 <!-- TODO: set variables for empty cells and increment variable value for
