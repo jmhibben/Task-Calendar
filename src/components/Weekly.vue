@@ -1,43 +1,36 @@
 <template>
-<!-- FIXME: is this <div> and class tag necessary? -->
-<div class="content">
-<header>Week of {{ weekStart }}</header>
-
-<nav>
-  <a class="button prev" href="#">Back</a>
-</nav>
-
+<div class="container">
+<nav><a class="button prev" href="#">Back</a></nav>
+<h6>Week of {{ weekStart }}</h6>
 <!-- TODO: add dates to table header? -->
-<article>
-  <table>
-  <thead>
-    <tr class="primaryRow">
-      <th>Hour</th>
-      <th>Sunday</th>
-      <th>Monday</th>
-      <th>Tuesday</th>
-      <th>Wednesday</th>
-      <th>Thursday</th>
-      <th>Friday</th>
-      <th>Saturday</th>
-    </tr>
-  </thead>
+<table>
+<thead>
+  <tr class="primaryRow">
+    <th>Hour</th>
+    <th>Sunday</th>
+    <th>Monday</th>
+    <th>Tuesday</th>
+    <th>Wednesday</th>
+    <th>Thursday</th>
+    <th>Friday</th>
+    <th>Saturday</th>
+  </tr>
+</thead>
 
-  <tbody>
-    <template v-for="(row, index) in this.fullArray">
-    <tr :class="{ altRow: (index % 2) }">
-      <td :timestamp="setTimestamp(index)">{{ timestamp }}</td>
-      <template v-for="task in row">
-      <timeSlot :description='task.description' :startTime='task.startTime'
-                :endTime='task.endTime' :color='task.color'
-                :weekday='task.weekday' :googleid='task.googleid'>
-      </timeSlot>
-      </template>
-    </tr>
+<tbody>
+  <template v-for="(row, index) in this.fullArray">
+  <tr :class="{ altRow: (index % 2) }">
+    <td :timestamp="setTimestamp(index)">{{ timestamp }}</td>
+    <template v-for="task in row">
+    <timeSlot :description='task.description' :startTime='task.startTime'
+              :endTime='task.endTime' :color='task.color'
+              :weekday='task.weekday' :googleid='task.googleid'>
+    </timeSlot>
     </template>
-  </tbody>
-  </table>
-</article>
+  </tr>
+  </template>
+</tbody>
+</table>
 </div>
 </template>
 
@@ -190,81 +183,28 @@ export default {
 </script>
 
 
-<!-- TODO: <style> needs further cleaning and replacing with Skeleton -->
 <style scoped lang="scss">
-  $tableColor: #d3d3d3;
+  @import "../assets/skeleton/skeleton.scss";
+  $color: #fff; // set to white like skeleton default so rows could be darkened
+  table {
+    tr {
+      &.altRow {
+        background-color: darken($color, 5%);
+      }
 
-  .content {
-    margin: 0 auto;
-    width: 800px;
-    box-sizing: content-box;
+      &.primaryRow {
+        background-color: darken($color, 15%);
 
-    header {
-      font-size: 1.3rem;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    nav {
-      background-color: #eee;
-      height: 100%;
-      width: 100%;
-
-      .button {
-        background-color: $tableColor;
-        border: 2px solid $tableColor;
-        border-radius: 4px;
-        color: #333;
-        padding: 4px;
-        text-align: center;
-        text-decoration: none;
-        width: 80px;
-
-        &.prev {
-          float: left;
+        th {
+          text-align: center;
+          padding-right: 15px;
+          padding-left: 15px;
         }
       }
     }
 
-    article {
-      margin-top: 35px;
-    }
-  }
-
-  table {
-    background-color: $tableColor;
-    border-collapse: collapse;
-    border: 1px solid darken($tableColor, 25%);
-    border-radius: 4px;
-
-    tr {
-      &.altRow {
-        background-color: darken($tableColor, 15%);
-      }
-
-      &.primaryRow {
-        background-color: darken($tableColor, 25%);
-      }
-    }
-    th, td {
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-      padding: 10px;
-      text-align: left;
-      vertical-align: top;
-      width: 100px;
-
-      &.overlap {
-        border-bottom: none;
-      }
-
-      &:hover {
-        background-color: darken($tableColor, 10%);
-      }
-
-    }
-    td {
-      height: 40px;
+    td, th {
+      border-right: 1px solid $light-grey;
     }
   }
 </style>

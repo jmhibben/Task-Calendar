@@ -20,5 +20,6 @@
 
 <style scoped lang="scss">
   // FIXME:using deprecated 'bgcolor' attribute until i understand how to send
-  // values to <style>
+  // values to <style>, if possible
+  @import "../assets/skeleton/skeleton.scss";
 </style>
