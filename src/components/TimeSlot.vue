@@ -1,11 +1,19 @@
 <template>
-  <td :bgcolor='color' :rowspan='endTime - startTime + 1'>{{ description }}</td>
+  <td :bgcolor='color' :rowspan='endTime - startTime + 1' :googleid='googleid'
+      @click='taskNav()'>
+    {{ description }}
+  </td>
 </template>
 
 
 <script>
   export default {
-    props: ['description', 'startTime', 'endTime', 'color', 'weekday']
+    props: ['description', 'startTime', 'endTime', 'color', 'weekday', 'googleid'],
+    methods: {
+      taskNav () {
+        this.$router.push('task')
+      }
+    }
   }
 </script>
 

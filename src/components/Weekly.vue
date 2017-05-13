@@ -9,7 +9,6 @@
 </nav>
 
 <!-- TODO: add dates to table header? -->
-<!-- TODO: default hours listed? -->
 <article>
   <table>
   <thead>
@@ -29,11 +28,11 @@
   <tbody>
     <tr v-for="(row, index) in this.fullArray">
       <td :timestamp="setTimestamp(index)">{{ timestamp }}</td>
-      <!-- FIXME: displaying tasks incorrectly -->
       <template v-for="task in row">
       <timeSlot :description='task.description' :startTime='task.startTime'
                 :endTime='task.endTime' :color='task.color'
-                :weekday='task.weekday'>
+                :weekday='task.weekday' :googleid='task.googleid'
+                @click='taskNav()'>
       </timeSlot>
       </template>
     </tr>
@@ -121,6 +120,8 @@ export default {
       this.timestamp = stamp
     },
 
+    // Creates a jagged array of blank tasks and then places real tasks in their
+    // time slot.
     createFullArray () {
       let blank = {
         date: '',
@@ -132,6 +133,7 @@ export default {
       }
       let fullArray = []
       let subArray = []
+      // create jagged array of blank tasks
       for (let i = 0; i < this.height; i++) {
         for (let j = 0; j < 7; j++) {
           subArray[j] = blank
@@ -139,16 +141,14 @@ export default {
         fullArray[i] = subArray
         subArray = []
       }
+      // add the real tasks to the array of blank tasks
       for (let task of this.taskArray) {
         fullArray[(task.startTime - this.earliest)][(task.weekday - 1)] = task
+        // if task spans more than one cell, remove the cells under it
         if (task.endTime - task.startTime > 0) {
-          // console.log(task.description + ' height: ' + (task.endTime - task.startTime))
           for (let i = 1; i <= task.endTime - task.startTime; i++) {
-            // console.log('length before: ' + fullArray[task.startTime - this.earliest + i].length)
-            // console.log('splicing: ' + task.description + i + ' at ' + (task.startTime - this.earliest + i) + ', ' + (task.weekday - 1))
             fullArray[task.startTime - this.earliest + i]
             .splice((task.weekday - 1), 1)
-            // console.log('length after: ' + fullArray[task.startTime - this.earliest + i].length)
           }
         }
       }
@@ -249,19 +249,5 @@ alternateRow? -->
     td {
       height: 40px;
     }
-  }
-
-  .fab {
-    background-color: rgb(78, 146, 233);
-    border-radius: 30px;
-    border-style: hidden;
-    bottom: 30px;
-    font-size: 2.5rem;
-    height: 60px;
-    padding: 0;
-    position: fixed;
-    right: 20%;
-    text-align: center;
-    width: 60px;
   }
 </style>
