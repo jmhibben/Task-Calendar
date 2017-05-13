@@ -23,9 +23,9 @@
     </tr>
   </thead>
 
-  <!-- TODO: needs to dynamically assign "alternativeRow" class -->
   <tbody>
-    <tr v-for="(row, index) in this.fullArray">
+    <template v-for="(row, index) in this.fullArray">
+    <tr :class="{ altRow: (index % 2) }">
       <td :timestamp="setTimestamp(index)">{{ timestamp }}</td>
       <template v-for="task in row">
       <timeSlot :description='task.description' :startTime='task.startTime'
@@ -34,6 +34,7 @@
       </timeSlot>
       </template>
     </tr>
+    </template>
   </tbody>
   </table>
 </article>
@@ -190,12 +191,8 @@ export default {
 
 
 <!-- TODO: <style> needs further cleaning and replacing with Skeleton -->
-<!-- TODO: set variables for empty cells and increment variable value for
-alternateRow? -->
 <style scoped lang="scss">
-  html, body {
-    font-family: Roboto, "Libre Sans", "Ubuntu Sans", "Open Sans", sans-serif;
-  }
+  $tableColor: #d3d3d3;
 
   .content {
     margin: 0 auto;
@@ -214,8 +211,8 @@ alternateRow? -->
       width: 100%;
 
       .button {
-        background-color: lightgrey;
-        border: 2px solid lightgrey;
+        background-color: $tableColor;
+        border: 2px solid $tableColor;
         border-radius: 4px;
         color: #333;
         padding: 4px;
@@ -235,18 +232,18 @@ alternateRow? -->
   }
 
   table {
-    background-color: lightgrey;
+    background-color: $tableColor;
     border-collapse: collapse;
-    border: 1px solid #888;
+    border: 1px solid darken($tableColor, 25%);
     border-radius: 4px;
 
     tr {
-      &.alternateRow {
-        background-color: #aaa;
+      &.altRow {
+        background-color: darken($tableColor, 15%);
       }
 
       &.primaryRow {
-        background-color: #888;
+        background-color: darken($tableColor, 25%);
       }
     }
     th, td {
@@ -262,7 +259,7 @@ alternateRow? -->
       }
 
       &:hover {
-        background-color: #999;
+        background-color: darken($tableColor, 10%);
       }
 
     }
