@@ -1,7 +1,6 @@
 <template>
 <!-- FIXME: is this <div> and class tag necessary? -->
 <div class="content">
-<!-- FIXME: needs to load first day of week as 'weekStart' -->
 <header>Week of {{ weekStart }}</header>
 
 <nav>
@@ -31,8 +30,7 @@
       <template v-for="task in row">
       <timeSlot :description='task.description' :startTime='task.startTime'
                 :endTime='task.endTime' :color='task.color'
-                :weekday='task.weekday' :googleid='task.googleid'
-                @click='taskNav()'>
+                :weekday='task.weekday' :googleid='task.googleid'>
       </timeSlot>
       </template>
     </tr>
@@ -55,7 +53,7 @@ export default {
       altRow: false,
       earliest: 10,
       fullArray: [],
-      height: 7,
+      height: 0,
       latest: 17,
       taskArray: [
         {
@@ -65,9 +63,17 @@ export default {
           endTime: 18,
           placed: false,
           startTime: 9,
-          weekday: 7
+          weekday: 0
         },
-
+        {
+          color: 'green',
+          date: '05/12/17',
+          description: 'Secret Illuminati Council Meeting',
+          endTime: 16,
+          placed: false,
+          startTime: 13,
+          weekday: 0
+        },
         {
           color: 'red',
           date: '05/10/17',
@@ -75,7 +81,7 @@ export default {
           description: 'Bowling Practice',
           placed: false,
           startTime: 19,
-          weekday: 4
+          weekday: 0
         },
 
         {
@@ -85,19 +91,32 @@ export default {
           endTime: 8,
           placed: false,
           startTime: 8,
-          weekday: 2
+          weekday: 0
         }
       ],
       taskNav: '',
-      timestamp: '10:00AM',
-      weekStart: '05/07/17'
+      timestamp: '',
+      weekStart: ''
     }
   },
 
   methods: {
+    // Set the numerical weekday value of the tasks where Sunday is '1'
+    setWeekdays (taskArray) {
+      for (let task of taskArray) {
+        let dateObj = new Date(task.date)
+        task.weekday = dateObj.getDay() + 1
+      }
+    },
+
     // Get/set first date of the week.
-    // FIXME: wrong date
-    getWeekStart (taskArray) { this.weekStart = taskArray[0].date },
+    getWeekStart (task) {
+      let dayNum = task.date.split('/')
+      dayNum[1] = parseInt(dayNum[1])
+      dayNum[1] -= (task.weekday - 1)
+      dayNum[1] = '0' + dayNum[1].toString()
+      this.weekStart = dayNum.join('/')
+    },
 
     // Set the start and end points for the table based on task start/end times.
     setTableHeight (taskArray) {
@@ -157,8 +176,9 @@ export default {
   },
 
   mounted: function () {
+    this.setWeekdays(this.taskArray)
     this.setTableHeight(this.taskArray)
-    this.getWeekStart(this.taskArray)
+    this.getWeekStart(this.taskArray[0])
     this.createFullArray()
   },
 
