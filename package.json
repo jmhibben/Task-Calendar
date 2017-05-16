@@ -24,6 +24,7 @@
     "googleapis": "^19.0.0",
     "loggerr": "^1.7.0",
     "morgan": "^1.8.1",
+    "tracer": "^0.8.9",
     "vue": "^2.2.2",
     "vue-router": "^2.2.0",
     "vuex": "^2.2.1"
