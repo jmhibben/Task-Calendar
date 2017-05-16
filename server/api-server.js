@@ -8,134 +8,46 @@ const os = require('os')
 const fs = require('fs')
 const path = require('path')
 let morgan = require('morgan')
-let Loggerr = require('loggerr')
+// let Loggerr = require('loggerr')
+let moment = require('moment')
 
 let OAuth2 = google.auth.OAuth2
 
-let generateLogStream = (fileName) => {
-  return fs.createWriteStream(fileName, {
-    flags: 'a',
-    encoding: 'utf8'
-  })
+let l = {
+  debug: 0,
+  trace: 1,
+  info: 2,
+  log: 3,
+  warn: 4,
+  error: 5
 }
 
-let debugLog = generateLogStream('./debug.log')
-let infoLog  = generateLogStream('./info.log')
-let warnLog  = generateLogStream('./warn.log')
-let errLog   = generateLogStream('./error.log')
-let fullLog  = generateLogStream('./full.log')
-
-// Server colors
-let error = chalk.red.bold
-let warn = chalk.red
-let info = chalk.cyan
-let debug = chalk.green.bold
-
-const l = {
-  emergency: Loggerr.EMERGENCY,
-  alert: Loggerr.ALERT,
-  critical: Loggerr.CRITICAL,
-  error: Loggerr.ERROR,
-  warning: Loggerr.WARNING,
-  notice: Loggerr.NOTICE,
-  info: Loggerr.INFO,
-  debug: Loggerr.DEBUG
-}
-
-let sepLogger = new Loggerr({
-  streams: Loggerr.levels.map((level) => {
-    let outStream
-    switch (Loggerr.levels.indexOf(level)) {
-      case l.emergency:
-      case l.alert:
-      case l.critical:
-      case l.error:
-        outStream = errLog
-      case l.warning:
-      case l.notice:
-        outStream = infoLog
-      case l.info:
-        outStream = infoLog
-      case l.debug:
-      default:
-        outStream = debugLog
+let log = require('tracer').dailyfile({
+  root: 'server/logs',
+  maxLogFiles: 10,
+  allLogsFileName: 'full',
+  format: [
+    '{{timestamp}} : {{file}}:{{line}} > {{title}} -- {{message}}',
+    {
+      error: '{{timestamp}} : {{file}}:{{line}} > {{title}} -- {{message}}\nCall Stack:\n{{stack}}'
     }
-    return outStream
-  })
-})
-let fullLogger = new Loggerr({
-  streams: fullLog
-})
-let consoleLogger = new Loggerr({
-  streams: console.log,
-  formatter: Loggerr.levels.map((date, level, data) => {
-    let color
-    switch (Loggerr.levels.indexOf(level)) {
-      case l.emergency:
-      case l.alert:
-      case l.critical:
-      case l.error:
-        color = error
-      case l.warning:
-      case l.notice:
-        color = warn
-      case l.info:
-        color = info
-      case l.debug:
-      default:
-        color = debug
-    }
-    return color(date + ': ' + data.msg)
-  })
+  ],
+  dateformat: 'hh:MM:ss.l tt'
 })
 
-let log = (level, message) => {
-  switch (level) {
-    case l.emergency:
-    case l.alert:
-    case l.critical:
-    case l.error:
-      fullLogger.error(message)
-      sepLogger.error(message)
-      consoleLogger.error(message)
-      console.log(error(message))
-      break
-    case l.warning:
-    case l.notice:
-      fullLogger.warning(message)
-      sepLogger.warning(message)
-      consoleLogger.warning(message)
-      console.log(warn(message))
-      break
-    case l.info:
-      fullLogger.info(message)
-      sepLogger.info(message)
-      consoleLogger.info(message)
-      console.log(info(message))
-      break
-    case l.debug:
-    default:
-      fullLogger.debug(message)
-      sepLogger.debug(message)
-      consoleLogger.debug(message)
-      console.log(debug(message))
-      break
-  }
-}
-
-log(l.info, 'Opening Programmer\'s Box...')
+log.info('Opening Programmer\'s Box...')
 // body-parser setup for headers
-log(l.debug, 'Giving body parser a magnifying glass...')
+log.debug('Giving body parser a magnifying glass...')
 server.use(bodyParser.urlencoded({ extended: true }))
 server.use(bodyParser.json());
 
-log(l.debug, 'Scoping out a port...')
+log.debug('Scoping out a port...')
 let port = process.env.PORT || 8079
 
 // OAUTH2 INIT
-log(l.info, 'Hiring OAuth2...')
+log.info('Hiring OAuth2...')
 let oauth_config = require('./client_secret')
-log(l.debug, 'Giving client its authorization media...')
+log.debug('Giving client its authorization media...')
 // Postman Client returns data as expected through this configuration
 let oauthClient = new OAuth2(
   oauth_config.web.client_id,
@@ -150,27 +62,28 @@ let scopes = [
   'https://www.googleapis.com/auth/calendar'
   // ,'https://www.googleapis.com/auth/profile']
 ]
-log(l.debug,'Locating client\'s place of consent...')
+log.debug('Locating client\'s place of consent...')
 let url = oauthClient.generateAuthUrl({
   access_type: 'online', // explicitly declaring default
   scope: scopes
 })
 
-log(l.debug, 'Prepping authorization locker...')
+log.debug('Prepping authorization locker...')
 let _auth = {
-  tokenSet: false,
+  token: null,
   timeout: null,
+  user: null,
   is_authorized () {
-    return _auth.tokenSet
-  }
+    return this.token != null
+  },
 }
 
 // ROUTING
-log(l.info, 'Pressing Router\'s power button...')
+log.info('Pressing Router\'s power button...')
 let router = express.Router()
 
 // Activating CORS headers
-log(l.debug, 'Selecting CORS Lite...')
+log.debug('Selecting CORS Lite...')
 let corsOptions = {
   // origin: `http://${network.interfaces[network.key][network.index]}${network.port}`,
   // origin: 'http://localhost:8080',
@@ -178,165 +91,244 @@ let corsOptions = {
   credentials: true
   // optionsSuccessStatus: 200
 }
-log(l.debug, 'Giving Router a CORS Lite...')
+log.debug('Giving Router CORS Lite...')
 router.use(cors(corsOptions))
 
 // CALENDAR
-log(l.info, 'Looking for calendar...')
+log.info('Looking for Calendar...')
 let calendar = google.calendar({
   version: 'v3'
 })
 // Calendar info
-log(l.debug, 'Keeping Cal out- lost its ID')
-let _calId = null
+log.debug('Keeping Calendar out- knows its age, but lost its ID')
+let now = moment()
+let _cal = {
+  id: null,
+  month: now.month(), // default
+  year: now.year(), //default
+  events: {} // will store `moment(<date>).format('MM-DD-YY'): _event.id` pairs
+}
+
+// People info
+log.debug('Checking if Router is a People person')
+let people = google.people({
+  version: 'v1'
+})
+
+log.debug('Router wants to know why nobody likes them')
+let _user = null
 
 // Logging
-log(l.info, 'Prodding Morgan into life...')
+log.info('Prodding Morgan into life...')
 let requestLogStream = fs.createWriteStream(path.join(__dirname, 'logs/request.log'), {flags: 'a'})
 let format = ':date[iso] :remote-addr -- HTTP/:http-version :method :status :url :response-time ms'
 router.use(morgan(format, {stream: requestLogStream}))
 
-log(l.info, 'Trying to confuse Router with weird directions...')
+log.info('Trying to confuse Router with weird directions...')
 router.get('/', (req, res) => {
-  log(l.debug, 'Client requesting connection verification')
+  log.debug('Client requesting connection verification')
   res.send({
     message: 'Connection verified'
   })
-  log(l.debug, 'Connection verification sent')
+  log.debug('Connection verification sent')
 })
 
 // AUTHORIZATION
 
 router.route('/auth')
   .get((req, res) => {
-    log(l.debug, 'Client requesting auth verification')
+    log.debug('Client requesting auth verification')
     res.send({
       authorized: _auth.is_authorized()
     })
-    log(l.debug, 'Auth verification sent')
+    log.debug('Auth verification sent')
   })
 
 router.route('/auth/url')
   .get((req, res) => {
-    log(l.debug, 'Client requesting auth URL')
+    log.debug('Client requesting auth URL')
     res.send({
       url: url
     })
-    log(l.debug, 'Auth URL sent')
+    log.debug('Auth URL sent')
   })
-
-router.route('/auth/code/:code')
+// TODO: refactor for using request body to contain code, rather than the route
+router.route('/auth/code')
   // Returns HTML Status Code 204 on success
   .post((req, res) => {
-    log(l.debug, 'Client sent auth code')
-    // _auth.code = req.params.code
-    log(l.debug, 'Getting the token from Google...')
-    oauthClient.getToken(req.params.code, (err, tokens) => {
+    log.info('Client sent auth code')
+    // log.debug('Auth request:\n', req)
+    let code = req.headers.referer.split('=')[1]
+    log.debug('Auth code:\n', code)
+    log.debug('Getting the token from Google...')
+    oauthClient.getToken(code, (err, tokens) => {
       if (err) {
-        log(l.error, 'Unable to get the auth token:')
-        log(l.error, err)
+        log.error('Unable to get the auth token:', err)
+        res.sendStatus(404)
       }
-      log(l.debug, 'Got response:')
-      log(l.debug, tokens)
+      log.debug('Got response:', tokens)
       oauthClient.setCredentials({
-        access_token: tokens
+        access_token: tokens.access_token
       })
-      log(l.debug, 'Setting registered auth client..')
+      log.debug('Setting registered auth client..')
       google.options({
         auth: oauthClient
       })
-      log(l.info, 'Auth token(s) stored')
+      log.info('Auth token(s) stored')
+      res.sendStatus(204)
     })
-    res.sendStatus(204)
   })
-
-router.route('/auth/token/:token')
-  // Returns code 204 on success
-  .post((req, res) => {
-    log(l.info, 'Setting OAuth2 credentials')
-    oauthClient.setCredentials({
-      access_token: req.params.token
-    })
-    google.options({
-      auth: oauthClient
-    })
-    _auth.tokenSet = true
-    // _auth.timeout = Date.now() + req.params.expires_in
-    log(l.info, 'Auth token recieved')
-    res.sendStatus(204)
-  })
-
-// add route to handle auth response
 
 // CALENDARS
 
 router.route('/cal')
-  // Get a list of all calendars and return the Task calendar
+  // Get a list of all calendars and return the Task calendar if it exists
   .get((req, res) => {
-    log(l.info, 'Requesting calendar list from Google')
-    let cals = calendar.calendarList.list({
+    log.info('Requesting calendar list from Google')
+    let cals
+    calendar.calendarList.list({
       auth: oauthClient
     }, (err, response) => {
       if (err) {
-        log(l.error, `There was a problem getting the calendar list from Google:`)
-        log(l.error, err)
+        log.error(`There was a problem getting the calendar list from Google:`, err)
+        res.sendStatus(400)
+        // log.error(err)
       }
-      log(l.debug, 'Response recieved:')
-      log(l.debug, response)
+      // log.debug('Calendar response recieved', response.items)
+      for (let cal of response.items) {
+        if (cal.primary === true) {
+          log.debug('Primary calendar: ', cal)
+          _cal.id = cal.id
+          res.send({calendar: cal.id})
+        }
+      }
     }) // should be a JSON object- or can at least parse to one
-    log(l.debug, 'Attempt complete.')
-    // let cals = []
-  //   for(let c of cals) {
-  //     if(c.summary === "Tasks") {
-  //       _cal.task_cal_id = c.id
-  //       break
-  //     }
-  //   }
-  //   if(_cal.task_cal_id === null) {
-  //     // we need to create the calendar here... AFTER the API is working
-  //     res.send({
-  //       error: 'Cannot find the Tasks calendar'
-  //     })
-  //   }
+    log.debug('Attempt complete.')
   })
+  .post((req, res) => {
+    log.info('Client requesting creation of Tasks calendar')
+    calendar.calendars.insert({
+      summary: 'Tasks'
+    }, (err, response) => {
+      if (err) {
+        log.error('An error occurred while creating the Tasks calendar:', err)
+        // log.error(err)
+        res.send({
+          status: 418,
+          error: err,
+          message: 'Tasks calendar could not be created'
+        })
+      }
+      log.debug('Calendar creation response:', response)
+      // log.debug(response)
+      res.sendStatus(204)
+    })
+  })
+
+// router.route('/cal/:cal_id')
+//   .get((req, res) => {
+//     log.debug('Client requesting calendar', req.params)
+//   })
 
 // EVENTS
 
 router.route('/events')
   .get((req, res) => {
-    log(l.info, 'Client requesting events list')
-    res.send({
-      events: [],
-      message: 'Events not yet implemented'
+    log.info('Client requesting events list')
+    calendar.events.list({
+      auth: oauthClient,
+      calendarId: 'primary',
+      singleEvents: true,
+      timeMin: moment(`${_cal.year}/${_cal.month}`).toISOString(),
+      orderBy: 'startTime'
+    }, (err, response) => {
+      if (err) {
+        log.error('Unable to get the events list: ', err)
+        res.sendStatus(400)
+      }
+      log.debug('Fetching and filtering events')
+      let events = {}
+      log.debug('Cal:', _cal)
+      for(let event of response.items) {
+        // log.debug(event)
+        let date = moment(event.start.dateTime)
+        // log.debug('Date: ', date)
+        if (date.format('M-YYYY') === `${_cal.month}-${_cal.year}`) {
+          log.debug('Date matches criteria')
+          let day = date.format('M-D')
+          if (events[day] === undefined) {
+            events[day] = []
+          }
+          events[day].push(event.id)
+        }
+      }
+      log.debug('Event list: ', events)
+      res.send({
+        events: events
+      })
     })
-    log(l.info, 'Calendar events sent')
+    // res.send({
+    //   events: [],
+    //   message: 'Events not yet implemented'
+    // })
+    log.info('Calendar events sent')
   })
   .post((req, res) => {
     // create the new task
-    log(l.info, 'Creating new event')
+    log.info('Creating new event')
     res.send({
       task_id: 'superfakeid'
     })
-    log(l.info, 'New event created')
+    log.info('New event created')
+  })
+
+router.route('/events/event/:id')
+  .get((req, res) => {
+    log.debug('Event request: ', req)
   })
 
 router.route('/events/:date')
   .get((req, res) => {
-    log(l.info, `Client requesting events for ${req.params.date}`)
+    log.info(`Client requesting events for ${req.params.date}`)
     res.send({
       date: req.params.date
     })
-    log(l.info, 'Sent calendar event')
+    log.info('Sent calendar events')
   })
 
-// router.route('/month/:month')
+// USER
+
+router.route('/user')
+  // get the user's information
+  .get((req, res) => {
+    // fetch a fresh copy of the GoogleUser object
+    // serve it to the client
+    log.info('Client requesting User object')
+    let me
+    people('people/me',
+      (err, response) => {
+        if (err) {
+          log.error('There was a problem getting the User object from Google:')
+          log.error(err)
+        }
+        log.debug('User response recieved:')
+        log.debug(response)
+        // res.send(response)
+      })
+    res.send({
+      user: me})
+  })
+  .post((req, res) => {
+    log.info('Client sending user data')
+    log.debug(req)
+  })
 
 // START SERVER
 
 // server.set('trust proxy', 'http://127.0.0.1')
 
 server.use('/api', router)
-log(l.info, 'Unable to confuse Router.')
+log.info('Unable to confuse Router.')
 
 server.listen(port)
-log(l.info, `Router started server at http://localhost:${port}`)
+log.info(`Router started server at http://localhost:${port}`)
