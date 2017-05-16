@@ -6,7 +6,6 @@ import Task from '@/components/Task'
 import Login from '@/components/Login'
 
 Vue.use(Router)
-
 export default new Router({
   routes: [
     {
@@ -28,6 +27,11 @@ export default new Router({
     {
       path: '/task',
       name: 'Task',
+      component: Task
+    },
+    {
+      path: '/task/:eventID',
+      name: 'TaskEvent',
       component: Task
     }
   ]
