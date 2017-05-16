@@ -1,0 +1,302 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Task Calendar",
+		"_postman_id": "176d2362-6349-85af-db6c-f8c36da3654a",
+		"description": "Testing the API for the Task Calendar project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authorization",
+			"description": "Test authorization API to verify that it can return the proper responses",
+			"item": [
+				{
+					"name": "/auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"let response = JSON.parse(responseBody);",
+									"tests[\"Response type is boolean\"] = typeof response.authorized === 'boolean';",
+									"",
+									"postman.setNextRequest('/auth/url')"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/api/auth",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Find out if the user has been authorized or not"
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/url",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"let response = JSON.parse(responseBody);",
+									"tests[\"URL recieved is a string\"] = typeof response.url === 'string';",
+									"",
+									"postman.setNextRequest('/api//auth/token/:token_real')"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/api/auth/url",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get the Consent URL"
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/code/:code",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 204\"] = responseCode.code === 204;",
+									"",
+									"tests[\"No response body was sent\"] = responseBody === \"\";"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/api/auth/code/{{fakecode}}",
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": "Get the auth code from the client"
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/token/:token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 204\"] = responseCode.code === 204;",
+									"",
+									"tests[\"No response body was sent\"] = responseBody === \"\";"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/api/auth/token/{{faketoken}}",
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": "Get auth token from the client"
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/token/:token_real",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 204\"] = responseCode.code === 204;",
+									"",
+									"tests[\"No response body was sent\"] = responseBody",
+									"",
+									"postman.setNextRequest('/api/cal')"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/api/auth/token/access_token",
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": "Get auth token from the client"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Calendars",
+			"description": "Testing the Calendar API",
+			"item": [
+				{
+					"name": "/api/cal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"tests[\"Fetching the Tasks calendar errors\"] = response.error === 'Cannot find the Tasks calendar';"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/api/cal",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Fetches the Tasks Calendar"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Connection Test",
+			"description": "Dummy API request(s) for verification purposes",
+			"item": [
+				{
+					"name": "/api",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"let response = JSON.parse(responseBody)",
+									"tests[\"API connection is verified\"] = response.message === \"Connection verified\""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/api",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Verify that the API is loaded and running"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"description": "Test the Events API",
+			"item": [
+				{
+					"name": "/events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"let response = JSON.parse(responseBody)",
+									"",
+									"tests[\"A list of events is returned\"] = Array.isArray(response.events)",
+									"",
+									"tests[\"The events list is not empty\"] = (response.events !== undefined) && response.events.length > 0;"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/api/events",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Check for all stored events"
+					},
+					"response": []
+				},
+				{
+					"name": "/api/events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"tests[\"Your test name\"] = response.task_id === 'superfakeid';"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/api/events",
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"description": "Adds a new event to the calendar"
+					},
+					"response": []
+				},
+				{
+					"name": "/events/:date",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"// Make sure the response object exists",
+									"let response;",
+									"try {",
+									"    response = JSON.parse(responseBody);",
+									"} catch (e) {",
+									"    response = {}",
+									"}",
+									"",
+									"tests[\"A date is returned\"] = response.date !== undefined;"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"let date = new Date();",
+									"let today = '';",
+									"today += `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;",
+									"",
+									"",
+									"postman.setGlobalVariable('today', today);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/api/events/{{today}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Check for a specific stored event"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
