@@ -1,7 +1,7 @@
 <template>
 <div class="container">
-<nav><a class="button prev" href="#">Back</a></nav>
 <h6>Week of {{ weekStart }}</h6>
+<nav><a class="button" href="#/Calendar">Back</a></nav>
 <!-- TODO: add dates to table header? -->
 <table>
 <thead>

@@ -61,7 +61,7 @@ export default {
       this.apiGetCalendarEvents()
       logger(levels.DEBUG, levels.d, this.cal.events)
       let eid
-      // Note: this.cal.events is not iterable- should be {[key: string]: string} pairs 
+      // Note: this.cal.events is not iterable- should be {[key: string]: string} pairs
       for (let k of this.cal.events) {
         eid = k[0]
         break
