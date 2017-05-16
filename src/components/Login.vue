@@ -1,11 +1,12 @@
 <template>
 <div>
   <!-- This is currently displaying an empty element -->
-  <input id="g-signin" type="button" value="Sign in with Google" @click="login">
+  <input id="g-signin" type="button" value="Sign in with Google" @click="redirect">
 </div>
 </template>
 
 <script>
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 const levels = {
   DEBUG: 0,
@@ -38,53 +39,62 @@ export default {
   name: 'login',
   // data () {
   //   return {
-  //     url: () => {
-  //       if (this.$route.query === 'object' && this.$route.query.code !== null) {
-  //         logger(levels.DEBUG, levels.d, this.$route.query)
-  //         console.log('Preparing to change route...')
-  //         this.$store.dispatch('apiSetToken', `${this.$route.query.code}`)
-  //           .then(() => {
-  //             console.log('Changing route...')
-  //             this.$router.push('calendar')
-  //             return 'calendar'
-  //           }).catch((err) => {
-  //             console.error('Something went wrong processing the authentication:')
-  //             console.error(err)
-  //           })
-  //       } else {
-  //         return this.showConsent()
-  //       }
-  //     }
+  //     hasCode: false
   //   }
   // },
+  computed: mapState({
+    auth: 'auth',
+    user: 'user',
+    cal: 'calendar'
+  }),
+  mounted () {
+    logger(levels.DEBUG, levels.d, `Already authenticated? ${this.isAuthenticated()}`)
+    logger(levels.DEBUG, levels.d, window.location.href)
+    let temp = window.location.href.split('?')[1]
+    if (temp !== undefined) {
+      let code = temp.split('=')[1]
+      logger(levels.DEBUG, levels.d, code.split('#')[0])
+      this.apiSetToken(code.split('#')[0])
+      this.apiGetTaskCalendar()
+      logger(levels.DEBUG, levels.d, this.cal.id)
+      /* Test Block - Comment these lines out when ready */
+      this.apiGetCalendarEvents()
+      logger(levels.DEBUG, levels.d, this.cal.events)
+      let eid
+      // Note: this.cal.events is not iterable- should be {[key: string]: string} pairs 
+      for (let k of this.cal.events) {
+        eid = k[0]
+        break
+      }
+      this.apiGetEventDetails(eid)
+      /* End Test Block */
+    }
+  },
   methods: {
-    showConsent () {
-      this.$store.dispatch('apiShowLogin')
-        .then(() => {
-          // this.$nextTick(() => {
-          setTimeout(() => {
-            let url = this.$store.state.auth.url
-            logger(levels.DEBUG, levels.d, url)
-            // document.location = url
-            // return url
-          }, 150)
-          // })
-        }).catch((err) => {
-          logger(levels.ERROR, levels.e, 'Unable to redirect:')
-          logger(levels.ERROR, levels.e, err)
-        })
-    },
-    login () {
-      logger(levels.DEBUG, levels.d, this.$route.query)
-      if (this.$route.query.code !== undefined) {
-        logger(levels.INFO, levels.i, 'Redirecting to /calendar')
-        this.$router.push('calendar')
-      } else if (this.$route.query.code === undefined) {
-        logger(levels.INFO, levels.i, 'Redirecting to consent page')
-        this.showConsent()
-      } else {
-        logger(levels.DEBUG, levels.d, 'Huh...')
-        logger(levels.DEBUG, levels.d, this.$route.query)
+    ...mapActions([
+      'apiShowLogin',
+      'apiSetToken',
+      'apiGetUser',
+      'apiGetTaskCalendar',
+      'apiGetCalendarEvents',
+      'apiGetEventDetails'
+    ]),
+    ...mapGetters([
+      'isAuthenticated',
+      'getUser',
+      'getCalendar'
+    ]),
+    redirect () {
+      this.apiShowLogin()
+      // force the system to wait a moment until the url is present
+      let count = 0
+      while (this.auth.url === null) {
+        if (++count === 2000) break
+      }
+      logger(levels.DEBUG, levels.d, `Consent URL: ${this.auth.url}`)
+      // redirect only if the URL has been set
+      if (this.auth.url !== null) {
+        window.location = this.auth.url
       }
     }
   }
