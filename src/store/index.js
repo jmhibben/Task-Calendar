@@ -25,7 +25,7 @@ const l = {
 
 let logger = new Loggerr({
   streams: Loggerr.levels.map(() => {
-    return console.log
+    return process.stdout
   }),
   formatter: Loggerr.levels.map((date, level, data) => {
     let color
@@ -51,7 +51,7 @@ let logger = new Loggerr({
   })
 })
 
-const apihost = 'http://localhost:8079'
+const apihost = 'http://localhost:8079/api'
 
 export default new Vuex.Store({
   state: {
@@ -59,10 +59,26 @@ export default new Vuex.Store({
     auth: {
       url: null,
       tokenSet: false
+    },
+    user: null,
+    calendar: {
+      id: null,
+      events: {},
+      month: null,
+      year: null
     }
     // authClient: oauthClient
   },
   getters: {
+    getCalendar: (state) => {
+      return state.calendar
+    },
+    getUser: (state) => {
+      return state.user
+    },
+    isAuthenticated: (state) => {
+      return state.auth.tokenSet
+    }
   },
   // Mutations MUST be called in synchronous code
   // For async calls, use actions
@@ -75,8 +91,17 @@ export default new Vuex.Store({
       // logger.debug(auth)
       state.auth.url = auth.url
     },
+    setCalendar: (state, cal) => {
+      state.calendar.id = cal
+    },
+    setCalendarEvents: (state, events) => {
+      state.calendar.events = events
+    },
     setTokenRecieved: (state) => {
       state.auth.tokenSet = true
+    },
+    setUser: (state, user) => {
+      state.user = user
     }
   },
   // Using argument destructuring in actions to simplify use
@@ -85,45 +110,133 @@ export default new Vuex.Store({
     // See these for more information on dispatching actions:
     //  https://vuex.vuejs.org/en/actions.html#dispatching-actions
     //  https://vuex.vuejs.org/en/actions.html#dispatching-actions-in-components
-    apiShowLogin ({ commit }) {
+    apiShowLogin ({ commit, state }) {
       // let xhr = sendRequest('GET', '/auth/url')
       // setImmediate(xhr)
       // console.log(xhr)
+      if (state.auth.url !== null) {
+        logger.info('Already have consent URL')
+        return
+      }
       let xhr = new XMLHttpRequest()
 
       xhr.addEventListener('readystatechange', () => {
         if (xhr.readyState === 4) {
-          // console.log(xhr)
           logger.debug(xhr)
-          // console.log(xhr.responseText) // debug
+          logger.debug(xhr.responseText)
           let response = JSON.parse(xhr.responseText)
-          // console.log(response)
+          logger.debug(response)
           commit('setAuthUrl', response)
         }
       })
 
-      // xhr.open('GET', `${apihost}/api`)
-      xhr.open('GET', `${apihost}/api/auth/url`)
+      xhr.open('GET', `${apihost}/auth/url`, false)
       xhr.withCredentials = true
       xhr.setRequestHeader('cache-control', 'no-cache')
       xhr.send()
-      // console.log(xhr)
     },
     apiSetToken ({ commit }, authCode) {
-      // let xhr = sendRequest('POST', `/code/${authCode}`)
-      // setImmediate(xhr)
-      // console.log(xhr)
-      // let xhr = sendRequest('POST', `/code/${authCode}`)
-      // console.log(xhr)
       let xhr = new XMLHttpRequest()
-      xhr.addEventListener('readystatecange', () => {
+      xhr.addEventListener('readystatechange', () => {
         if (xhr.readyState === 4 && xhr.status === 204) {
           console.log(xhr.response)
           commit('setTokenRecieved')
         }
       })
 
-      xhr.open('POST', `${apihost}/api/auth/code/${authCode}`)
+      xhr.open('POST', `${apihost}/auth/code/`, false)
+      xhr.withCredentials = true
+      xhr.setRequestHeader('cache-control', 'no-cache')
+      xhr.send(`code=${authCode}`)
+    },
+    apiGetUser ({ commit, state }) {
+      let count = 0
+      while (state.auth.tokenSet === false) {
+        if (++count === 1000) break
+      }
+      if (!state.auth.tokenSet) {
+        logger.warning('Unable to verify token')
+        return
+      }
+      let xhr = new XMLHttpRequest()
+      xhr.addEventListener('readystatechange', () => {
+        if (xhr.readyState === 4) {
+          logger.debug('User response recieved')
+          logger.debug(xhr.responseText)
+          // commit('setUser')
+        }
+      })
+
+      xhr.open('GET', `${apihost}/user`, false)
+      xhr.withCredentials = true
+      xhr.setRequestHeader('cache-control', 'no-cache')
+      xhr.send()
+    },
+    apiGetTaskCalendar ({ commit }) {
+      let xhr = new XMLHttpRequest()
+      xhr.addEventListener('readystatechange', () => {
+        if (xhr.status === 418) {
+          logger.warning('No Tasks calendar found')
+        }
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          logger.debug('Calendar response recieved: ', xhr.responseText)
+          // commit('setCalendar')
+          let cal = JSON.parse(xhr.responseText)
+          logger.debug('Parsed calendars: ', cal)
+          commit('setCalendar', cal.calendar)
+        }
+      })
+
+      xhr.open('GET', `${apihost}/cal`, false)
+      xhr.withCredentials = true
+      xhr.setRequestHeader('cache-control', 'no-cache')
+      xhr.send()
+    },
+    apiCreateTaskCalendar ({ commit }) {
+      let xhr = new XMLHttpRequest()
+      xhr.addEventListener('readystatechange', () => {
+        if (xhr.status === 418) {
+          logger.debug('No Tasks calendar found')
+        }
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          logger.debug('Calendar response recieved', xhr.responseText)
+          // commit('setCalendar')
+        }
+      })
+
+      xhr.open('POST', `${apihost}/cal`, false)
+      xhr.withCredentials = true
+      xhr.setRequestHeader('cache-control', 'no-cache')
+      xhr.send()
+    },
+    apiGetCalendarEvents ({ commit, state }) {
+      let xhr = new XMLHttpRequest()
+      xhr.addEventListener('readystatechange', () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          logger.debug('Events recieved: ', xhr.responseText)
+          console.debug('Events recieved: ', xhr.responseText)
+          let events = JSON.parse(xhr.responseText)
+          commit('setCalendarEvents', events.events)
+        }
+      })
+
+      xhr.open('GET', `${apihost}/events`)
+      xhr.withCredentials = true
+      xhr.setRequestHeader('cache-control', 'no-cache')
+      xhr.send()
+    },
+    apiGetEventDetails ({ commit }, eid) {
+      let xhr = new XMLHttpRequest()
+      xhr.addEventListener('readystatechange', () => {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          logger.debug('Events recieved: ', xhr.responseText)
+          console.debug('Events recieved: ', xhr.responseText)
+          let events = JSON.parse(xhr.responseText)
+          commit('setCalendarEvents', events)
+        }
+      })
+
+      xhr.open('GET', `${apihost}/events/event/${eid}`)
       xhr.withCredentials = true
       xhr.setRequestHeader('cache-control', 'no-cache')
       xhr.send()
