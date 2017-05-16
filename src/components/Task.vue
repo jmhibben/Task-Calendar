@@ -1,18 +1,16 @@
 <template>
-  <div class="content">
-  <header>{{title}} {{$route.params.id}}</a></header>
+  <div class="container">
+  <h6>{{title}} {{$route.params.id}}</h6>
   <nav>
-    <router-link to="/" class="button prev">Calendar</router-link>
-    <router-link to="/Week" class="button next">Week</router-link>
+    <router-link to="/calendar" class="button">Calendar</router-link>
+    <router-link to="/Week" class="button">Week</router-link>
   </nav>
   <article>
     <form id="taskForm">
-      <p id="label">Name of Event: <textarea id="textbox" v-model="eventName" placeholder="Name of Event Here">{{eventName}}</textarea></p>
-      <br><br>
-
-      <p id="label">
-      Description:&nbsp&nbsp <textarea id="textbox" v-model="desc" placeholder="Description of Event Here">{{desc}}</textarea>
-    </p><br><br>
+      <div id="label">Name of Event: <input id="textbox" v-model="eventName" placeholder="Name of Event Here"></input></div>
+      <div id="label">
+      Description:&nbsp&nbsp <input id="textbox" v-model="desc" placeholder="Description of Event Here"></input>
+    </div>
 
       <div id="label">Start Time:
       <select v-model="startN">
@@ -23,7 +21,7 @@
       <select v-model="selectedStart">
       <option>AM</option>
       <option>PM</option>
-      </select></div><br>
+      </select></div>
 
       <div id="label">End Time:
       <select v-model="endN">
@@ -34,7 +32,7 @@
       <select v-model="selectedEnd">
       <option>PM</option>
       <option>AM</option>
-      </select></div><br>
+      </select></div>
 
 
       <div id="label">Color:
@@ -45,8 +43,8 @@
       <option>Orange</option>
       <option>Purple</option>
       <option>Green</option>
-      </select></div><br>
-      <button type='submit' class='btn btn-default' v-on:click='submitForm'>Submit</button>
+      </select></div>
+      <button type='submit' class='button' v-on:click='submitForm'>Submit</button>
     </form>
   </article>
   </div>
@@ -83,79 +81,4 @@
 
 <style scoped lang="scss">
 @import "../assets/skeleton/skeleton.scss";
-  $overdue: rgb(240, 165, 165);
-  $nodate: rgb(250, 200, 130);
-  $completed: rgb(140, 230, 170);
-
-  html, body {
-    background-color: teal;
-    font-family: Roboto, "Libre Sans", "Ubuntu Sans", "Open Sans", sans-serif;
-  }
-
-  .content {
-    margin: 0 auto;
-    width: 800px;
-    box-sizing: content-box;
-
-    header {
-      font-size: 1.3rem;
-      font-weight: bold;
-      text-align: center;
-    }
-
-    nav {
-      background-color: #eee;
-      height: 100%;
-      width: 100%;
-
-      .button {
-        background-color: lightgrey;
-        border: 2px solid lightgrey;
-        border-radius: 4px;
-        color: #333;
-        padding: 4px;
-        text-align: center;
-        text-decoration: none;
-        width: 80px;
-
-        &.prev {
-          float: left;
-        }
-
-        &.next {
-          float: right;
-        }
-      }
-
-      &:after {
-        clear: both;
-      }
-    }
-
-    article {
-      margin-top: 35px;
-    }
-
-    form {
-    width: 80%;
-    margin: 10% auto;
-    }
-
-    form.div {
-    display: inline-block;
-    }
-
-    #label, #input{
-    width: 50%;
-    position:relative;
-    text-align: left;
-    }
-
-    textarea {
-    resize: none;
-    float: right;
-    width: 50%;
-    }
-
-}
 </style>
