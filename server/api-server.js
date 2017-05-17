@@ -126,31 +126,31 @@ router.use(morgan(format, {stream: requestLogStream}))
 
 log.info('Trying to confuse Router with weird directions...')
 router.get('/', (req, res) => {
-  log.debug('Client requesting connection verification')
+  log.info('Client requesting connection verification')
   res.send({
     message: 'Connection verified'
   })
-  log.debug('Connection verification sent')
+  log.info('Connection verification sent')
 })
 
 // AUTHORIZATION
 
 router.route('/auth')
   .get((req, res) => {
-    log.debug('Client requesting auth verification')
+    log.info('Client requesting auth verification')
     res.send({
       authorized: _auth.is_authorized()
     })
-    log.debug('Auth verification sent')
+    log.info('Auth verification sent')
   })
 
 router.route('/auth/url')
   .get((req, res) => {
-    log.debug('Client requesting auth URL')
+    log.info('Client requesting auth URL')
     res.send({
       url: url
     })
-    log.debug('Auth URL sent')
+    log.info('Auth URL sent')
   })
 // TODO: refactor for using request body to contain code, rather than the route
 router.route('/auth/code')
@@ -160,7 +160,7 @@ router.route('/auth/code')
     // log.debug('Auth request:\n', req)
     let code = req.headers.referer.split('=')[1]
     log.debug('Auth code:\n', code)
-    log.debug('Getting the token from Google...')
+    log.info('Getting the token from Google...')
     oauthClient.getToken(code, (err, tokens) => {
       if (err) {
         log.error('Unable to get the auth token:', err)
@@ -170,7 +170,7 @@ router.route('/auth/code')
       oauthClient.setCredentials({
         access_token: tokens.access_token
       })
-      log.debug('Setting registered auth client..')
+      log.info('Setting registered auth client..')
       google.options({
         auth: oauthClient
       })
@@ -185,7 +185,6 @@ router.route('/cal')
   // Get a list of all calendars and return the Task calendar if it exists
   .get((req, res) => {
     log.info('Requesting calendar list from Google')
-    let cals
     calendar.calendarList.list({
       auth: oauthClient
     }, (err, response) => {
@@ -263,9 +262,16 @@ router.route('/events')
         }
       }
       log.debug('Event list: ', events)
-      res.send({
-        events: events
-      })
+      if (events.length === 0) {
+        res.send({
+          events: null,
+          message: 'No events found'
+        })
+      } else {
+        res.send({
+          events: events
+        })
+      }
     })
     // res.send({
     //   events: [],
@@ -284,7 +290,22 @@ router.route('/events')
 
 router.route('/events/event/:id')
   .get((req, res) => {
-    log.debug('Event request: ', req)
+    let id = req.params.id
+    calendar.events.get({
+      auth: oauthClient,
+      calendarId: _cal.id,
+      eventId: id
+    }, (err, response) => {
+      if (err) {
+        log.error('There was an error fetching the event: ', err)
+        res.sendStatus(400)
+      }
+      log.debug('Event found: ', response)
+      res.send({
+        event: response
+      })
+      log.info('Event sent to client')
+    })
   })
 
 router.route('/events/:date')
