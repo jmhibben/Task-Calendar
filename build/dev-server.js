@@ -14,6 +14,8 @@ var webpackConfig = process.env.NODE_ENV === 'testing'
   ? require('./webpack.prod.conf')
   : require('./webpack.dev.conf')
 
+let cors = require('cors')
+
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
 // automatically open browser, if not set will be false
@@ -24,6 +26,13 @@ var proxyTable = config.dev.proxyTable
 
 var app = express()
 var compiler = webpack(webpackConfig)
+
+let corsOpts = {
+  // origin: 'http://localhost:8079',
+  origin: true,
+  credentials: true
+}
+app.use(cors(corsOpts))
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,
@@ -89,3 +98,7 @@ module.exports = {
     server.close()
   }
 }
+
+// start the API server
+const spawn = require('child_process').spawn
+const api = spawn('node', ['server/api-server.js'])
