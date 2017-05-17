@@ -66,7 +66,8 @@ export default new Vuex.Store({
       events: {},
       month: null,
       year: null
-    }
+    },
+    event: null
     // authClient: oauthClient
   },
   getters: {
@@ -78,6 +79,9 @@ export default new Vuex.Store({
     },
     isAuthenticated: (state) => {
       return state.auth.tokenSet
+    },
+    getEvents: (state) => {
+      return state.calendar.events
     }
   },
   // Mutations MUST be called in synchronous code
@@ -102,6 +106,9 @@ export default new Vuex.Store({
     },
     setUser: (state, user) => {
       state.user = user
+    },
+    setEventDetails: (state, event) => {
+      state.event = event
     }
   },
   // Using argument destructuring in actions to simplify use
@@ -213,14 +220,16 @@ export default new Vuex.Store({
       let xhr = new XMLHttpRequest()
       xhr.addEventListener('readystatechange', () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
-          logger.debug('Events recieved: ', xhr.responseText)
-          console.debug('Events recieved: ', xhr.responseText)
+          // logger.debug('Events recieved: ', xhr.responseText)
+          // console.debug('Events recieved: ', xhr.responseText)
           let events = JSON.parse(xhr.responseText)
+          console.debug('Events: ')
+          console.debug(events.events)
           commit('setCalendarEvents', events.events)
         }
       })
 
-      xhr.open('GET', `${apihost}/events`)
+      xhr.open('GET', `${apihost}/events`, false)
       xhr.withCredentials = true
       xhr.setRequestHeader('cache-control', 'no-cache')
       xhr.send()
@@ -229,14 +238,14 @@ export default new Vuex.Store({
       let xhr = new XMLHttpRequest()
       xhr.addEventListener('readystatechange', () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
-          logger.debug('Events recieved: ', xhr.responseText)
-          console.debug('Events recieved: ', xhr.responseText)
-          let events = JSON.parse(xhr.responseText)
-          commit('setCalendarEvents', events)
+          logger.debug('Event recieved: ', xhr.responseText)
+          console.debug('Event recieved: ', xhr.responseText)
+          let event = JSON.parse(xhr.responseText)
+          commit('setEventDetails', event.event)
         }
       })
 
-      xhr.open('GET', `${apihost}/events/event/${eid}`)
+      xhr.open('GET', `${apihost}/events/event/${eid}`, false)
       xhr.withCredentials = true
       xhr.setRequestHeader('cache-control', 'no-cache')
       xhr.send()
