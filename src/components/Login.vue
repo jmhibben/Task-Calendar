@@ -45,7 +45,8 @@ export default {
   computed: mapState({
     auth: 'auth',
     user: 'user',
-    cal: 'calendar'
+    cal: 'calendar',
+    event: 'event'
   }),
   mounted () {
     logger(levels.DEBUG, levels.d, `Already authenticated? ${this.isAuthenticated()}`)
@@ -60,13 +61,9 @@ export default {
       /* Test Block - Comment these lines out when ready */
       this.apiGetCalendarEvents()
       logger(levels.DEBUG, levels.d, this.cal.events)
-      let eid
-      // Note: this.cal.events is not iterable- should be {[key: string]: string} pairs
-      for (let k of this.cal.events) {
-        eid = k[0]
-        break
-      }
+      let eid = this.cal.events[Object.keys(this.cal.events)[1]][0]
       this.apiGetEventDetails(eid)
+      logger(levels.DEBUG, levels.d, this.event.start.dateTime)
       /* End Test Block */
     }
   },
